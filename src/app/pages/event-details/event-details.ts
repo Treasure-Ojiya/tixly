@@ -318,7 +318,7 @@ export class EventDetails {
 
   async share(): Promise<void> {
     const url = window.location.href;
-    const title = this.event()?.title ?? 'EVVNT event';
+    const title = this.event()?.title ?? 'Tixly event';
 
     try {
       if (navigator.share) {
