@@ -10,8 +10,12 @@ import {
   EventListItem,
   UpdateEventModel,
   UpdateTicketTypeModel,
-  BookingOrderId,
-  BookingOrderIdAttendees,
+  BookedEventOrderId,
+  EventBookingProperty,
+  EventCheckInRequest,
+  EventCheckInResponse,
+  UpdateToFeaturedRequest,
+  PayForFeatured,
 } from '../../../app-model/model';
 
 @Injectable({
@@ -72,6 +76,23 @@ export class OrganizerService {
       changes,
     );
   }
+
+  featureEvent(
+    eventId: string,
+    request: UpdateToFeaturedRequest,
+  ): Observable<EventModel> {
+    return this.http.patch<EventModel>(
+      `${this.baseUrl}/events/${eventId}/feature`,
+      request,
+    );
+  }
+
+  payForEvent(eventId: string, paymentData: PayForFeatured): Observable<any> {
+    return this.http.post<any>(
+      `${this.baseUrl}/events/${eventId}/feature/pay`,
+      paymentData,
+    );
+  }
   ////////////////////////////////////////manage events
 
   // POST /events/{event_id}/publish: publish a draft event public.
@@ -93,15 +114,29 @@ export class OrganizerService {
     );
   }
 
-  getEventOrders(orderId: string): Observable<BookingOrderId> {
-    return this.http.get<BookingOrderId>(`${this.baseUrl}/booking/${orderId}`);
+  // 1. Fetch the list for the table
+  getEventOrders(event_id: string): Observable<BookedEventOrderId[]> {
+    return this.http.get<BookedEventOrderId[]>(
+      `${this.baseUrl}/events/${event_id}/orders`,
+    );
   }
 
-  getEventOrderAttendees(
-    orderId: string,
-  ): Observable<BookingOrderIdAttendees[]> {
-    return this.http.get<BookingOrderIdAttendees[]>(
-      `${this.baseUrl}/booking/${orderId}/attendees`,
+  // 2. Fetch the rich details for the modal
+  getEventBookingProperties(
+    event_Id: string,
+  ): Observable<EventBookingProperty[]> {
+    return this.http.get<EventBookingProperty[]>(
+      `${this.baseUrl}/events/${event_Id}/attendees`,
+    );
+  }
+
+  checkInEvent(
+    event_Id: string,
+    checkInRequest: EventCheckInRequest,
+  ): Observable<EventCheckInResponse> {
+    return this.http.post<EventCheckInResponse>(
+      `${this.baseUrl}/events/${event_Id}/checkin`,
+      checkInRequest,
     );
   }
 }

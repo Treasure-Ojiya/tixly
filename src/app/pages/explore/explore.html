@@ -21,7 +21,7 @@
             type="button"
             (click)="closeFilters()"
             aria-label="Close filters"
-            class="w-9 h-9 rounded-full flex items-center justify-center text-ink hover:bg-brand-soft transition-colors"
+            class="w-9 h-9 rounded-full flex items-center justify-center text-ink hover:bg-brand-soft transition-colors cursor-pointer"
           >
             <svg
               viewBox="0 0 24 24"
@@ -46,7 +46,7 @@
             <button
               type="button"
               (click)="resetFilters()"
-              class="text-sm font-semibold text-brand hover:underline underline-offset-4"
+              class="text-sm font-semibold text-brand hover:underline underline-offset-4 transition-colors duration-200 cursor-pointer"
             >
               Clear
             </button>
@@ -63,7 +63,7 @@
                   type="button"
                   (click)="setDate(opt.id)"
                   [attr.aria-pressed]="dateRange() === opt.id"
-                  class="px-3.5 py-1.5 rounded-full border text-sm transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                  class="px-3.5 py-1.5 rounded-full border text-sm transition-colors cursor-pointer duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
                   [ngClass]="
                     dateRange() === opt.id
                       ? 'bg-brand border-brand text-white font-medium'
@@ -151,7 +151,7 @@
         <button
           type="button"
           (click)="closeFilters()"
-          class="lg:hidden mt-8 w-full rounded-full bg-brand text-white py-3 text-sm font-semibold hover:bg-brand-dark transition-colors"
+          class="lg:hidden mt-8 w-full rounded-full bg-brand text-white py-3 text-sm font-semibold hover:bg-brand-dark transition-colors duration-200 cursor-pointer"
         >
           Show {{ resultCount() }} results
         </button>
@@ -166,7 +166,7 @@
           <button
             type="button"
             (click)="openFilters()"
-            class="lg:hidden inline-flex shrink-0 items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-ink hover:border-brand hover:text-brand transition-colors"
+            class="lg:hidden inline-flex shrink-0 items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-ink hover:border-brand hover:text-brand transition-colors cursor-pointer"
           >
             Filters
             @if (activeFilters().length) {
@@ -210,7 +210,7 @@
               type="button"
               (click)="clearSearchBox()"
               aria-label="Clear search"
-              class="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-gray-500 hover:bg-brand-soft hover:text-ink transition-colors"
+              class="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-gray-500 hover:bg-brand-soft hover:text-ink transition-colors cursor-pointer"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -261,7 +261,7 @@
                 type="button"
                 (click)="chip.clear()"
                 [attr.aria-label]="'Remove filter ' + chip.label"
-                class="inline-flex items-center gap-1.5 rounded-full bg-brand/10 text-brand pl-3 pr-2 py-1 text-sm font-medium hover:bg-brand-dark hover:text-white transition-colors"
+                class="inline-flex items-center gap-1.5 rounded-full bg-brand/10 text-brand pl-3 pr-2 py-1 text-sm font-medium hover:bg-brand-dark hover:text-white transition-colors duration-200 cursor-pointer"
               >
                 {{ chip.label }}
                 <svg
@@ -292,7 +292,7 @@
               <button
                 type="button"
                 (click)="retry()"
-                class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
+                class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors cursor-pointer"
               >
                 Try again
               </button>
@@ -321,7 +321,7 @@
               <button
                 type="button"
                 (click)="clearAll()"
-                class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
+                class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors cursor-pointer"
               >
                 Clear search and filters
               </button>
@@ -386,7 +386,7 @@
                     >
                       <a
                         [routerLink]="['/events', event.uuid]"
-                        class="after:absolute after:inset-0 focus-visible:outline-2 focus-visible:outline-brand rounded"
+                        class="after:absolute after:inset-0 focus-visible:outline-2 focus-visible:outline-brand rounded cursor-pointer"
                       >
                         {{ event.title }}
                       </a>
@@ -435,7 +435,7 @@
                         } @else if (isQueued(event)) {
                           <a
                             routerLink="/queue"
-                            class="relative z-10 rounded-full border border-brand-dark px-5 py-2 text-sm font-semibold text-brand-dark hover:bg-brand-dark hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand transition-colors"
+                            class="relative z-10 rounded-full border border-brand-dark px-5 py-2 text-sm font-semibold text-brand-dark hover:bg-brand-dark hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand transition-colors cursor-pointer"
                           >
                             Queued, view
                           </a>
@@ -444,7 +444,7 @@
                             type="button"
                             (click)="queueNow(event)"
                             [disabled]="queueingId() !== null"
-                            class="relative z-10 rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="relative z-10 rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             {{
                               queueingId() === event.uuid
@@ -465,7 +465,7 @@
                 <button
                   type="button"
                   (click)="loadMore()"
-                  class="rounded-full border border-brand px-6 py-2.5 text-sm font-semibold text-ink hover:bg-brand-dark hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand transition-colors"
+                  class="rounded-full border border-brand px-6 py-2.5 text-sm font-semibold text-ink hover:bg-brand-dark hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand transition-colors cursor-pointer"
                 >
                   Load more events
                 </button>

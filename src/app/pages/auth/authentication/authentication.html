@@ -12,12 +12,7 @@
     <div class="absolute inset-0 flex items-center justify-center bg-nav">
       <div class="text-white px-12">
         <!-- <h2 class="text-6xl font-bold mb-6">Tixly</h2> -->
-        <img
-          src="assets/logo/evvnt-logo-white-1.png"
-          alt=""
-          width="350"
-          height="350"
-        />
+        <img src="assets/logo/tixly-logo.png" alt="" width="350" height="350" />
         <p class="text-white text-xl mx-auto mt-4">
           Discover events, book tickets and spaces, and create experiences of
           your own — all in one place.
@@ -92,7 +87,7 @@
 
               <button
                 type="button"
-                class="absolute right-3 inset-y-0 flex items-center justify-center focus:outline-none group"
+                class="absolute right-3 inset-y-0 flex items-center justify-center focus:outline-none group cursor-pointer"
                 (click)="togglePassword()"
                 aria-label="Toggle password visibility"
               >
@@ -103,7 +98,7 @@
                       : '/assets/icons/eye-view.svg'
                   "
                   alt=""
-                  class="w-5 h-5 opacity-60 group-hover:opacity-100 transition-opacity duration-200"
+                  class="w-5 h-5 opacity-60 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
                 />
               </button>
             </div>
@@ -112,7 +107,7 @@
             <div class="mb-3">
               <a
                 routerLink="/auth/forgot-password"
-                class="text-sm text-brand font-semibold hover:text-brand-dark hover:underline"
+                class="text-sm text-brand font-semibold hover:text-brand-dark hover:underline cursor-pointer"
                 >Forgot password?</a
               >
             </div>
@@ -121,7 +116,7 @@
           <button
             type="submit"
             [disabled]="loginForm.invalid || isLoginSubmitting"
-            class="flex w-full items-center justify-center gap-2 bg-brand text-white py-2 rounded-md font-semibold hover:bg-brand-dark shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="flex w-full items-center justify-center gap-2 bg-brand text-white py-2 rounded-md font-semibold hover:bg-brand-dark shadow-lg transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             @if (isLoginSubmitting) {
               <span
@@ -137,7 +132,7 @@
             Don't have an account?
             <button
               type="button"
-              class="text-brand font-semibold hover:text-brand-dark hover:underline"
+              class="text-brand font-semibold hover:text-brand-dark hover:underline cursor-pointer"
               (click)="showRegisterForm()"
             >
               Sign up
@@ -163,7 +158,7 @@
                   type="button"
                   (click)="setAccountType(option.id)"
                   [attr.aria-pressed]="accountType === option.id"
-                  class="rounded-xl border px-4 py-3 text-left transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-brand"
+                  class="rounded-xl border px-4 py-3 text-left transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-brand cursor-pointer"
                   [ngClass]="
                     accountType === option.id
                       ? 'border-brand-dark bg-brand-soft ring-1 ring-brand-dark'
@@ -193,7 +188,7 @@
                 id="organization"
                 formControlName="organization"
                 type="text"
-                placeholder="e.g. Acme Events Co."
+                placeholder="e.g. Tixly Co."
                 class="w-full px-4 py-1.5 rounded-lg border border-ink/60 placeholder:text-ink/50 focus:outline-none focus:ring-1 focus:ring-brand/30 focus:border-brand"
               />
               @if (
@@ -271,7 +266,7 @@
 
                 <button
                   type="button"
-                  class="absolute right-3 inset-y-0 flex items-center justify-center focus:outline-none group"
+                  class="absolute right-3 inset-y-0 flex items-center justify-center focus:outline-none group cursor-pointer"
                   (click)="togglePassword()"
                   aria-label="Toggle password visibility"
                 >
@@ -282,7 +277,7 @@
                         : '/assets/icons/eye-view.svg'
                     "
                     alt=""
-                    class="w-5 h-5 opacity-60 group-hover:opacity-100 transition-opacity duration-200"
+                    class="w-5 h-5 opacity-60 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
                   />
                 </button>
               </div>
@@ -292,7 +287,7 @@
           <button
             type="submit"
             [disabled]="registerForm.invalid || isRegisterSubmitting"
-            class="flex w-full items-center justify-center gap-2 bg-brand text-white py-2 rounded-md font-semibold hover:bg-brand-dark shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="flex w-full items-center justify-center gap-2 bg-brand text-white py-2 rounded-md font-semibold hover:bg-brand-dark shadow-lg transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             @if (isRegisterSubmitting) {
               <span
@@ -308,7 +303,7 @@
             Already have an account?
             <button
               type="button"
-              class="text-brand font-semibold hover:text-brand-dark hover:underline"
+              class="text-brand font-semibold hover:text-brand-dark hover:underline cursor-pointer"
               (click)="showLoginForm()"
             >
               Sign in

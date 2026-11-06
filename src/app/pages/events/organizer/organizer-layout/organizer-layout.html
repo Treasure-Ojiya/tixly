@@ -1,51 +1,59 @@
-<!-- DASHBOARD LAYOUT -->
-<div class="fixed inset-0 flex flex-col overflow-hidden bg-surface">
-  <!-- HEADER -->
+<div
+  class="fixed inset-0 flex flex-col overflow-hidden bg-surface"
+  (keydown.escape)="closeMobileMenu()"
+>
   <header
-    class="shrink-0 flex items-center justify-between bg-nav text-white font-semibold px-6 py-2 z-40"
+    class="z-30 flex shrink-0 items-center justify-between bg-nav px-4 py-2 font-semibold text-white shadow-sm sm:px-6"
   >
-    <div class="flex items-center space-x-4">
+    <div class="flex items-center gap-3">
       <button
         type="button"
         (click)="toggleMobileMenu()"
-        class="md:hidden p-2 rounded-md transition"
+        aria-label="Toggle navigation menu"
+        aria-controls="dashboard-sidebar"
+        [attr.aria-expanded]="mobileMenuOpen"
+        class="rounded-lg p-2 transition-colors hover:bg-white/10 cursor-pointer md:hidden"
       >
-        <i class="fas fa-bars text-lg"></i>
+        <i class="fas fa-bars text-lg" aria-hidden="true"></i>
       </button>
 
-      <img
-        src="assets/logo/evvnt-logo-white-1.png"
-        alt="Evvnt Logo"
-        routerLink="/home"
-        class="block w-20 h-auto cursor-pointer"
-      />
+      <a routerLink="/home" aria-label="Tixly home" class="block rounded-md">
+        <img
+          src="assets/logo/tixly-logo.png"
+          alt="Tixly"
+          class="block h-auto w-20"
+        />
+      </a>
     </div>
 
-    <div class="flex items-center space-x-1">
-      <img
-        src="assets/icons/profile.svg"
-        alt=""
-        width="20"
-        height="20"
-        class=""
-      />
-      <span class="text-md font-medium"> Welcome, {{ user }} </span>
+    <div
+      class="flex items-center gap-2 rounded-full bg-white/10 py-1 pl-1.5 pr-4"
+    >
+      <span
+        class="flex h-7 w-7 items-center justify-center rounded-full bg-white/15"
+      >
+        <img src="assets/icons/user.svg" alt="" class="h-4 w-4" />
+      </span>
+
+      <span class="max-w-40 truncate text-sm font-medium">
+        <span class="hidden sm:inline">Welcome,</span> {{ user }}
+      </span>
     </div>
   </header>
 
-  <!-- BODY -->
-  <div class="flex flex-1 min-h-0 overflow-hidden">
-    <!-- MOBILE BACKDROP -->
+  <div class="flex min-h-0 flex-1 overflow-hidden">
+    <!-- Mobile backdrop -->
     @if (mobileMenuOpen) {
       <div
-        class="fixed inset-0 bg-black/40 z-40 md:hidden"
+        class="fixed inset-0 z-40 bg-black/40 md:hidden"
         (click)="closeMobileMenu()"
+        aria-hidden="true"
       ></div>
     }
 
-    <!-- SIDEBAR -->
     <aside
-      class="shrink-0 bg-nav border-gray-200 shadow-lg flex flex-col gap-6 py-6 px-3 overflow-y-auto fixed md:static inset-y-0 left-0 z-50 md:z-auto w-52 transform transition-all duration-500 md:translate-x-0"
+      id="dashboard-sidebar"
+      class="fixed inset-y-0 left-0 z-50 flex w-60 shrink-0 flex-col gap-4 overflow-y-auto bg-nav px-3 py-6 shadow-lg transition-[transform,width] duration-300 md:static md:z-auto md:translate-x-0 md:shadow-none"
       [ngClass]="{
         'translate-x-0': mobileMenuOpen,
         '-translate-x-full': !mobileMenuOpen,
@@ -53,47 +61,60 @@
         'md:w-20': isCollapsed,
       }"
     >
-      <nav class="flex flex-col space-y-2 w-full text-white">
+      <nav class="flex w-full flex-col gap-1.5 text-white" aria-label="Main">
         @for (item of navItems; track item.link) {
           <a
             [routerLink]="item.link"
-            routerLinkActive="bg-white/10"
-            class="flex items-center space-x-3 p-3 rounded-xl hover:bg-white/20 transition w-full"
-            [ngClass]="{ 'md:justify-center md:space-x-0': isCollapsed }"
+            routerLinkActive="bg-white/15 before:opacity-100"
+            ariaCurrentWhenActive="page"
+            [attr.title]="isCollapsed ? item.label : null"
             (click)="closeMobileMenu()"
+            class="relative flex w-full items-center gap-3 rounded-xl p-3 transition-colors hover:bg-white/20 before:absolute before:left-0 before:top-1/2 before:h-5 before:w-1 before:-translate-y-1/2 before:rounded-r-full before:bg-white before:opacity-0 before:transition-opacity"
+            [ngClass]="{ 'md:justify-center md:gap-0': isCollapsed }"
           >
-            <img [src]="item.icon" [alt]="item.label" width="20" height="20" />
+            <img
+              [src]="item.icon"
+              alt=""
+              width="20"
+              height="20"
+              class="shrink-0"
+            />
 
-            @if (!isCollapsed) {
-              <span class="font-medium">{{ item.label }}</span>
-            }
+            <span
+              class="font-medium"
+              [ngClass]="{ 'md:sr-only': isCollapsed }"
+              >{{ item.label }}</span
+            >
           </a>
         }
       </nav>
 
-      <!-- LOGOUT -->
-      <button
-        type="button"
-        (click)="logout()"
-        class="mt-auto flex items-center space-x-3 p-3 rounded-xl w-full text-white hover:bg-white/20 transition"
-        [ngClass]="{ 'md:justify-center md:space-x-0': isCollapsed }"
-      >
-        <img
-          src="assets/icons/logout-white.svg"
-          alt="Logout"
-          width="20"
-          height="20"
-        />
+      <div class="mt-auto border-t border-white/10 pt-4">
+        <button
+          type="button"
+          (click)="logout()"
+          [attr.title]="isCollapsed ? 'Logout' : null"
+          class="flex w-full items-center gap-3 rounded-xl p-3 text-white transition-colors hover:bg-white/20 cursor-pointer"
+          [ngClass]="{ 'md:justify-center md:gap-0': isCollapsed }"
+        >
+          <img
+            src="assets/icons/logout-white.svg"
+            alt=""
+            width="20"
+            height="20"
+            class="shrink-0"
+          />
 
-        @if (!isCollapsed) {
-          <span class="font-medium">Logout</span>
-        }
-      </button>
+          <span class="font-medium" [ngClass]="{ 'md:sr-only': isCollapsed }"
+            >Logout</span
+          >
+        </button>
+      </div>
     </aside>
 
-    <!-- MAIN CONTENT: the only scroll container on the page -->
     <main
-      class="flex-1 min-w-0 min-h-0 overflow-y-auto overflow-x-hidden bg-surface"
+      id="main-content"
+      class="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-surface"
     >
       <router-outlet></router-outlet>
     </main>

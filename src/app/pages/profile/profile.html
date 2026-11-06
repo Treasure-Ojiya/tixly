@@ -32,8 +32,9 @@
           </div>
 
           <button
+            (click)="openEditProfile()"
             type="button"
-            class="inline-flex w-fit shrink-0 items-center border border-brand text-brand px-5 py-2 rounded-full text-sm font-semibold hover:bg-brand-dark hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand transition-colors duration-200"
+            class="mt-4 inline-flex items-center gap-2 rounded-full border border-dashed border-gray-300 px-4 py-2 text-sm font-semibold text-ink transition-colors cursor-pointer hover:border-brand hover:text-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
           >
             Edit profile
           </button>
@@ -64,7 +65,7 @@
             type="button"
             (click)="activeTab = tab.id"
             [attr.aria-current]="activeTab === tab.id ? 'page' : null"
-            class="py-4 text-sm whitespace-nowrap border-b-2 -mb-px transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            class="py-4 text-sm whitespace-nowrap border-b-2 -mb-px transition-colors cursor-pointer duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
             [ngClass]="
               activeTab === tab.id
                 ? 'font-semibold text-brand border-brand'
@@ -87,7 +88,7 @@
           <h2 class="text-xl font-bold text-ink">Upcoming</h2>
           <a
             routerLink="/queue"
-            class="text-sm font-semibold text-brand-dark hover:underline underline-offset-4"
+            class="text-sm font-semibold text-brand-dark hover:underline underline-offset-4 transition-colors cursor-pointer"
           >
             View all in queue
           </a>
@@ -105,7 +106,7 @@
             <button
               type="button"
               (click)="loadQueue()"
-              class="font-semibold text-brand-dark hover:underline underline-offset-4"
+              class="font-semibold text-brand-dark hover:underline underline-offset-4 transition-colors cursor-pointer"
             >
               Try again
             </button>
@@ -120,7 +121,7 @@
             </p>
             <a
               routerLink="/explore"
-              class="inline-flex mt-4 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
+              class="inline-flex mt-4 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors cursor-pointer"
             >
               Explore events
             </a>
@@ -136,90 +137,6 @@
           </ul>
         }
       </section>
-
-      <!-- Recently Viewed -->
-      <section class="mt-14">
-        <div class="flex items-center justify-between mb-5">
-          <h2 class="text-xl font-bold text-ink">Recently viewed</h2>
-
-          <a
-            routerLink="/explore"
-            class="text-sm font-semibold text-brand hover:underline underline-offset-4"
-          >
-            Explore more
-          </a>
-        </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-8">
-          @for (event of recent; track event.title) {
-            <a href="#" class="group block">
-              <div class="rounded-2xl overflow-hidden bg-gray-100">
-                <img
-                  [src]="event.image"
-                  [alt]="event.title"
-                  class="w-full h-40 sm:h-44 object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-
-              <h3
-                class="font-semibold text-ink mt-3 group-hover:text-brand transition-colors"
-              >
-                {{ event.title }}
-              </h3>
-              <p class="text-sm text-gray-500 mt-0.5">{{ event.place }}</p>
-            </a>
-          }
-        </div>
-      </section>
-
-      <!-- Saved Events -->
-      <!-- <section class="mt-14">
-        <div class="flex items-center justify-between mb-5">
-          <h2 class="text-xl font-bold text-ink">Saved events</h2>
-
-          <a
-            routerLink="/explore"
-            class="text-sm font-semibold text-brand hover:underline underline-offset-4"
-          >
-            See more
-          </a>
-        </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-8">
-          @for (event of saved; track event.title) {
-            <a href="#" class="group block">
-              <div class="relative rounded-2xl overflow-hidden bg-gray-100">
-                <img
-                  [src]="event.image"
-                  [alt]="event.title"
-                  class="w-full h-40 sm:h-44 object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-
-                <button
-                  type="button"
-                  aria-label="Remove from saved"
-                  class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white flex items-center justify-center text-brand shadow-sm hover:bg-brand-soft focus-visible:outline-2 focus-visible:outline-brand transition-colors"
-                  (click)="$event.preventDefault()"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    class="w-5 h-5"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.7 4.5 6.4 4.5c2 0 3.5 1 4.6 2.6l1 1.4 1-1.4c1.1-1.6 2.6-2.6 4.6-2.6 3.7 0 5.5 3.9 4 7.3C19.5 16.4 12 21 12 21z"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <h3 class="font-semibold text-ink mt-3">{{ event.title }}</h3>
-              <p class="text-sm text-gray-500 mt-0.5">{{ event.place }}</p>
-            </a>
-          }
-        </div>
-      </section> -->
     } @else if (activeTab === "queue") {
       <section>
         <div class="flex items-center justify-between mb-5">
@@ -244,7 +161,7 @@
             <p class="font-semibold text-ink">Nothing in your queue</p>
             <a
               routerLink="/explore"
-              class="inline-flex mt-4 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
+              class="inline-flex mt-4 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors cursor-pointer"
             >
               Explore events
             </a>
@@ -271,7 +188,7 @@
         </p>
         <a
           routerLink="/explore"
-          class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors duration-200"
+          class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors duration-200 cursor-pointer"
         >
           Explore events
         </a>

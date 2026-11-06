@@ -43,7 +43,7 @@
         <button
           type="button"
           (click)="loadQueue()"
-          class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
+          class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors cursor-pointer"
         >
           Try again
         </button>
@@ -58,7 +58,7 @@
         </p>
         <a
           routerLink="/explore"
-          class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
+          class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors cursor-pointer"
         >
           Explore events
         </a>
@@ -123,21 +123,21 @@
               <div class="mt-auto pt-5 flex flex-wrap items-center gap-2">
                 <a
                   [routerLink]="['/events', item.event.uuid]"
-                  class="px-4 py-2 border border-brand text-ink text-sm font-semibold rounded-full hover:bg-brand-dark hover:text-white hover:border-brand-dark transition-colors"
+                  class="px-4 py-2 border border-brand text-ink text-sm font-semibold rounded-full hover:bg-brand-dark hover:text-white hover:border-brand-dark transition-colors cursor-pointer"
                 >
                   View details
                 </a>
                 <button
                   type="button"
                   (click)="goToPayment(item)"
-                  class="px-4 py-2 bg-brand text-white text-sm font-semibold rounded-full hover:bg-brand-dark transition-colors"
+                  class="px-4 py-2 bg-brand text-white text-sm font-semibold rounded-full hover:bg-brand-dark transition-colors cursor-pointer"
                 >
                   Checkout
                 </button>
                 <button
                   type="button"
                   (click)="removeItem(item)"
-                  class="ml-auto px-3 py-2 text-sm font-semibold text-gray-500 hover:text-danger-dark transition-colors"
+                  class="ml-auto px-3 py-2 text-sm font-semibold text-gray-500 hover:text-danger-dark transition-colors cursor-pointer"
                 >
                   Remove
                 </button>

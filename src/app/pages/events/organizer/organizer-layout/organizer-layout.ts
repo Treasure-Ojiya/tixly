@@ -42,7 +42,11 @@ export class OrganizerLayout implements OnInit {
       link: 'manage-events',
       icon: 'assets/icons/manage-white.svg',
     },
-    { label: 'Orders', link: 'orders', icon: 'assets/icons/order-white.svg' },
+    {
+      label: 'Orders',
+      link: 'orders/:id',
+      icon: 'assets/icons/order-white.svg',
+    },
     { label: 'Finance', link: 'finance', icon: 'assets/icons/finance.svg' },
     {
       label: 'Settings',

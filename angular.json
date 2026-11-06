@@ -55,10 +55,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "event:build:production"
+              "buildTarget": "tixly:build:production"
             },
             "development": {
-              "buildTarget": "event:build:development"
+              "buildTarget": "tixly:build:development"
             }
           },
           "defaultConfiguration": "development"

@@ -70,7 +70,7 @@ export class Navbar implements OnInit {
 
   createMenuItems = [
     {
-      path: '/events/organizer',
+      path: '/events/organizer/dashboard',
       icon: 'fa-ticket-alt',
       title: 'Host an Event',
       subtitle: 'Create and sell tickets',

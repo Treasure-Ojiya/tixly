@@ -36,30 +36,6 @@ export interface LoginResult {
   refresh_token: string;
   token_type: string;
 }
-
-export interface RefreshResult {
-  status: string;
-  message: string;
-  access_token: string;
-  refresh_token: string;
-  token_type: string;
-}
-
-export interface UserModel {
-  uuid: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  role: string;
-  phone: string;
-  created_at: string;
-}
-
-export interface UserResult {
-  status: string;
-  message: string;
-}
-
 export interface ForgotPasswordModel {
   email: string;
 }
@@ -80,6 +56,103 @@ export interface ResetPasswordResult {
   message: string;
 }
 
+export interface RefreshResult {
+  status: string;
+  message: string;
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+}
+
+//////////////////////user details and functions
+export interface UserModel {
+  uuid: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  account_type: string;
+  organization: string | null;
+  bank_name: string;
+  bank_account_number: string;
+  created_at: string;
+}
+
+export interface UpdateUserModel {
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  organization?: string;
+}
+
+export interface UpdatePasswordRequest {
+  current_password: string;
+  new_password: string;
+}
+
+export interface UpdateBankDetailsRequest {
+  bank_name: string;
+  bank_account_number: string;
+}
+
+export interface UpdateBankDetailsResponse {
+  uuid: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  account_type: string;
+  organization: string | null;
+  bank_name: string;
+  bank_account_number: string;
+  created_at: string;
+}
+
+/////bookings/me
+export interface UserBookedTicketResponse {
+  uuid: string;
+  event: EventTicketBooked;
+  ticket_type_id: string;
+  quantity: number;
+  total_amount: number;
+  is_free: boolean;
+  status: string;
+  created_at: string;
+}
+
+export interface EventTicketBooked {
+  uuid: string;
+  title: string;
+  location: string;
+  event_date: string;
+  images: string | null;
+}
+
+////bookings/{order_id}
+export interface UserOrderIdBookedTicket {
+  uuid: string;
+  event: EventTicketBooked;
+  ticket_type_id: string;
+  quantity: number;
+  total_amount: number;
+  is_free: boolean;
+  status: string;
+  created_at: string;
+}
+
+////bookings/{order_id}/attendees
+export interface UserBookedTicketAttendees {
+  uuid: string;
+  ticket_index: number;
+  full_name: string;
+  email: string;
+  phone: string;
+}
+//////////////////////user details and functions
+
+//////////////////////////////
+// Event List and Filters
+/////////////////////////////
 export interface EventListItem {
   uuid: string;
   title: string;
@@ -187,6 +260,7 @@ export interface BookingDetails {
   images: string[];
 }
 
+/// not in use, I think
 export interface BookingPayment {
   uuid: string;
   order_id: string;
@@ -196,6 +270,7 @@ export interface BookingPayment {
   reference: string;
   created_at: string;
 }
+/////////////////
 
 // Response of POST /bookings/{order_id}/pay/paystack.
 // Send the user to authorization_url to pay.
@@ -215,7 +290,7 @@ export interface PayBookingModel {
 }
 
 /////////////////////////////////////////////
-// Organizer Admin Models
+// Organizer Admin Models/Tools. Organizer-Service handles...
 ///To create an event, the organizer must provide the following information.
 export interface CreateEventModel {
   title: string;
@@ -231,13 +306,15 @@ export interface CreateEventModel {
   category_ids?: string[]; // keep if backend accepts it
   ticket_types?: CreateTicketTypeModel[];
 }
+
+// Used for property name(ticket_types) of CreateEventModel.
 export interface CreateTicketTypeModel {
   name: string;
   price: number;
   total_quantity: number;
 }
 
-// Get/Post; An array, used to create an event(as a property in create),
+// Get/Post; An array. Used also for property name(categories) of CreateEventModel. Used in manage-events to display the categories available for an event,
 // and in explore to filter events by category; the backend returns an array of EventCategories.
 // and event-details to display the category of an event.
 export interface EventCategories {
@@ -251,7 +328,7 @@ export interface CreateCategory {
   name: string;
 }
 
-// Body response for details of an event(post/patch). This is what the backend returns when you GET&PATCH /events/...
+// Body response for details of an event(result of GET/post/patch). This is what the backend returns...
 export interface EventModel {
   uuid: string;
   title: string;
@@ -271,7 +348,7 @@ export interface EventModel {
   updated_at: string;
 }
 
-// Ticket type details for an event. Used as property of EventModel and in the event list.
+// Ticket type details for an event. Used as property(ticket_types) of EventModel and in the event list.
 export interface EventTicketTypeModel {
   uuid: string;
   name: string;
@@ -282,6 +359,7 @@ export interface EventTicketTypeModel {
 }
 
 //If the event is hosted by an organizer, the organizer's details are included in the event details. If user is registered an organizer
+// Used for property name(organizer) of EventModel and in the event list.
 export interface EventOrganizerModel {
   uuid: string;
   first_name: string;
@@ -310,41 +388,63 @@ export interface UpdateTicketTypeModel {
   total_quantity?: number;
 }
 
-// In order(organizer-layout), the organizer can view the attendees of a booking order.
-// Tabular; initiates the modal with a list of attendees for each booking order.
-// The backend returns an array of BookingOrderId for each booking order.
-// Each booking order has a uuid, event, ticket_type_id, quantity, total_amount,
-// is_free, status, and created_at. The event property is an object with uuid,
-// title, location, and event_date.
-export interface BookingOrderId {
-  uuid: string;
-  event: BookingPropertyEvent;
-  ticket_type_id: string;
+export interface UpdateToFeaturedRequest {
+  featured: boolean;
+}
+
+export interface PayForFeatured {
+  event_id: string;
+  authorization_url: string;
+  reference: string;
+  amount: number;
+}
+
+// Used in to read(GET) orders for organizers(events/{event_id}/orders)
+export interface BookedEventOrderId {
+  order_id: string;
+  event: string;
+  buyer: string;
+  tickets: number;
+  total: string;
+  type: string;
+  status: string;
+  date: string;
+}
+
+/// Used to read(GET) attendees for a specific order(events/{event_id}/attendees)
+export interface EventBookingProperty {
+  order_id: string;
+  order_ref: string;
+  buyer_name: string;
+  buyer_email: string;
+  ticket_type: string;
   quantity: number;
   total_amount: number;
-  is_free: boolean;
   status: string;
-  created_at: string;
+  checked_in: boolean;
+  checked_in_at: string;
+  booked_at: string;
+  attendees: EventOrderIdAttendees[];
+  date: string;
 }
 
-export interface BookingPropertyEvent {
+// Used for property name(attendees) of EventBookingProperty
+// //Opens in a modal
+export interface EventOrderIdAttendees {
   uuid: string;
-  title: string;
-  location: string;
-  event_date: string;
-  // image_url:string | null
-}
-
-// In order(organizer-layout), the organizer can view the attendees of a booking order.
-// The backend returns an array of BookingOrderIdAttendees for each booking order.
-// Each attendee has a uuid, ticket_index, full_name, email, and phone.
-// The ticket_index is the index of the ticket in the booking order.
-// The full_name, email, and phone are the details of the attendee.
-//Opens in a modal
-export interface BookingOrderIdAttendees {
-  uuid: string;
-  ticket_index: string;
+  ticket_index: number;
   full_name: string;
   email: string;
   phone: string;
+}
+
+export interface EventCheckInRequest {
+  order_id: string;
+}
+
+export interface EventCheckInResponse {
+  order_id: string;
+  checked_in: boolean;
+  checked_in_at: string;
+  message: string;
 }

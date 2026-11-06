@@ -36,8 +36,6 @@ import {
   CreateTicketTypeModel,
   EventCategories,
   CreateCategory,
-  BookingOrderId,
-  BookingOrderIdAttendees,
 } from '../../../../app-model/model';
 
 import { OrganizerService } from '../../../../core/services/organizer-service/organizer-service';

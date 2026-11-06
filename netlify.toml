@@ -1,6 +1,6 @@
 [build]
   command = "ng build --configuration=production"
-  publish = "dist/event/browser"  # Replace with your actual `dist` folder
+  publish = "dist/tixly/browser"  # Replace with your actual `dist` folder
   functions = "netlify/functions"     # Only if using serverless functions
 
 [build.environment]

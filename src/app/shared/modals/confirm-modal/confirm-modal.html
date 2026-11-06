@@ -8,14 +8,14 @@
     <button
       type="button"
       (click)="cancel()"
-      class="rounded-full border border-gray-300 px-5 py-2.5 text-sm font-semibold text-ink hover:bg-gray-50 transition-colors"
+      class="rounded-full border border-gray-300 px-5 py-2.5 text-sm font-semibold text-ink hover:bg-gray-50 transition-colors cursor-pointer"
     >
       {{ data.cancelLabel ?? "Cancel" }}
     </button>
     <button
       type="button"
       (click)="confirm()"
-      class="rounded-full px-5 py-2.5 text-sm font-semibold text-white transition-colors"
+      class="rounded-full px-5 py-2.5 text-sm font-semibold text-white transition-colors cursor-pointer"
       [ngClass]="
         data.tone === 'danger'
           ? 'bg-danger hover:bg-danger-dark'

@@ -24,13 +24,13 @@
         <button
           type="button"
           (click)="retry()"
-          class="px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors"
+          class="px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors cursor-pointer"
         >
           Try again
         </button>
         <a
           routerLink="/explore"
-          class="px-5 py-2 rounded-full border border-brand text-ink text-sm font-semibold hover:bg-brand-dark hover:text-white transition-colors"
+          class="px-5 py-2 rounded-full border border-brand text-ink text-sm font-semibold hover:bg-brand-dark hover:text-white transition-colors cursor-pointer"
         >
           Back to explore
         </a>
@@ -63,7 +63,7 @@
         <div class="flex items-center justify-between">
           <a
             routerLink="/explore"
-            class="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-white backdrop-blur hover:bg-white/25 transition-colors"
+            class="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-white backdrop-blur hover:bg-white/25 transition-colors cursor-pointer"
           >
             <svg
               viewBox="0 0 24 24"
@@ -83,7 +83,7 @@
           <button
             type="button"
             (click)="share()"
-            class="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-white backdrop-blur hover:bg-white/25 transition-colors"
+            class="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-white backdrop-blur hover:bg-white/25 transition-colors cursor-pointer"
           >
             <svg
               viewBox="0 0 24 24"
@@ -106,13 +106,13 @@
 
         <div class="mt-auto pt-24">
           <div class="flex flex-wrap items-center gap-2 mb-4">
-            @if (e.status === "draft") {
+            <!-- @if (e.status === "draft") {
               <span
                 class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-gray-600"
               >
                 Draft: not visible to the public yet
               </span>
-            }
+            } -->
             @if (e.featured) {
               <span
                 class="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-ink"
@@ -239,7 +239,7 @@
 
         <section class="grid gap-4 sm:grid-cols-2">
           <div class="bg-white rounded-3xl border border-gray-200 p-6">
-            <p class="text-sm font-semibold text-gray-500">When</p>
+            <p class="text-sm font-semibold text-gray-500">Date/Time</p>
             <p class="mt-2 text-lg font-bold text-ink">
               {{ e.event_date | date: "EEEE, d MMMM y" }}
             </p>
@@ -253,7 +253,7 @@
           </div>
 
           <div class="bg-white rounded-3xl border border-gray-200 p-6">
-            <p class="text-sm font-semibold text-gray-500">Where</p>
+            <p class="text-sm font-semibold text-gray-500">Location</p>
             <p class="mt-2 text-lg font-bold text-ink">{{ e.location }}</p>
             <a
               [href]="mapsUrl()"
@@ -314,7 +314,7 @@
                       (click)="selectTicket(ticket)"
                       [disabled]="isSoldOut(ticket)"
                       [attr.aria-pressed]="selectedTicketId() === ticket.uuid"
-                      class="w-full flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed"
+                      class="w-full flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand cursor-pointer disabled:cursor-not-allowed"
                       [ngClass]="
                         selectedTicketId() === ticket.uuid
                           ? 'border-brand bg-brand/5 ring-1 ring-brand'
@@ -386,7 +386,7 @@
                       (click)="changeQuantity(1)"
                       [disabled]="quantity() >= maxQuantity()"
                       aria-label="Increase quantity"
-                      class="w-10 h-10 flex items-center justify-center text-ink rounded-full hover:bg-brand-soft disabled:opacity-40 disabled:hover:bg-transparent"
+                      class="w-10 h-10 flex items-center justify-center text-ink rounded-full hover:bg-brand-soft disabled:opacity-40 disabled:hover:bg-transparent cursor-pointer"
                     >
                       <svg
                         viewBox="0 0 24 24"
@@ -430,7 +430,7 @@
               type="button"
               (click)="goToPayment()"
               [disabled]="isPast() || !selectedTicket()"
-              class="mt-4 w-full rounded-full bg-brand py-3.5 text-base font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-gray-300 disabled:hover:bg-gray-300"
+              class="mt-4 w-full rounded-full bg-brand py-3.5 text-base font-semibold text-white transition-colors hover:bg-brand-dark cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-300 disabled:hover:bg-gray-300"
             >
               {{ ctaLabel() }}
             </button>
@@ -439,7 +439,7 @@
               type="button"
               (click)="addToQueue()"
               [disabled]="isPast() || isQueueing() || !selectedTicket()"
-              class="mt-2 w-full rounded-full border border-brand py-3 text-sm font-semibold text-ink transition-colors hover:bg-brand-dark hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-ink"
+              class="mt-2 w-full rounded-full border border-brand py-3 text-sm font-semibold text-ink transition-colors hover:bg-brand-dark hover:text-white cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-ink"
             >
               {{ isQueueing() ? "Adding..." : "Keep in queue" }}
             </button>
@@ -476,7 +476,7 @@
       <button
         type="button"
         (click)="scrollToTickets()"
-        class="shrink-0 rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white hover:bg-brand-dark transition-colors"
+        class="shrink-0 rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white hover:bg-brand-dark transition-colors cursor-pointer"
       >
         {{ isPast() ? "See details" : "Get tickets" }}
       </button>

@@ -3,118 +3,133 @@
     <h1 class="text-3xl md:text-4xl font-bold text-ink">Orders</h1>
   </div>
 
-  <div>
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-      <div
-        class="bg-white border border-gray-200 p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
-      >
-        <p class="text-gray-500 text-sm">Total Orders</p>
-        <h3 class="text-2xl font-bold text-ink">1,230</h3>
+  @if (isLoading()) {
+    <div class="space-y-4" aria-hidden="true">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        @for (n of [1, 2, 3, 4]; track n) {
+          <div class="h-24 bg-gray-200 rounded-lg animate-pulse"></div>
+        }
       </div>
-
-      <!-- Status dots: orange = pending, teal = completed -->
-      <div
-        class="bg-white border border-gray-200 p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
+      <div class="h-96 bg-gray-200 rounded-xl animate-pulse"></div>
+    </div>
+  } @else if (error()) {
+    <div class="text-center py-20 bg-white rounded-xl border border-gray-200">
+      <p class="text-danger-dark font-semibold">{{ error() }}</p>
+      <button
+        (click)="loadOrders()"
+        class="mt-4 px-5 py-2 bg-brand text-white rounded-full text-sm font-semibold hover:bg-brand-dark"
       >
-        <p
-          class="text-gray-500 text-sm flex items-center justify-center gap-1.5"
+        Try again
+      </button>
+    </div>
+  } @else {
+    <div>
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div
+          class="bg-white border border-gray-200 p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
         >
-          <span class="w-2 h-2 rounded-full bg-accent"></span>
-          Pending
-        </p>
-        <h3 class="text-2xl font-bold text-ink">24</h3>
-      </div>
-
-      <div
-        class="bg-white border border-gray-200 p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
-      >
-        <p
-          class="text-gray-500 text-sm flex items-center justify-center gap-1.5"
+          <p class="text-gray-500 text-sm">Total Orders</p>
+          <h3 class="text-2xl font-bold text-ink">{{ totalOrders() }}</h3>
+        </div>
+        <div
+          class="bg-white border border-gray-200 p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
         >
-          <span class="w-2 h-2 rounded-full bg-success"></span>
-          Completed
-        </p>
-        <h3 class="text-2xl font-bold text-ink">1,100</h3>
+          <p
+            class="text-gray-500 text-sm flex items-center justify-center gap-1.5"
+          >
+            <span class="w-2 h-2 rounded-full bg-accent"></span> Pending
+          </p>
+          <h3 class="text-2xl font-bold text-ink">{{ pendingOrders() }}</h3>
+        </div>
+        <div
+          class="bg-white border border-gray-200 p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
+        >
+          <p
+            class="text-gray-500 text-sm flex items-center justify-center gap-1.5"
+          >
+            <span class="w-2 h-2 rounded-full bg-success"></span> Completed
+          </p>
+          <h3 class="text-2xl font-bold text-ink">{{ completedOrders() }}</h3>
+        </div>
+        <div
+          class="bg-white border border-gray-200 p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
+        >
+          <p class="text-gray-500 text-sm">Checked In</p>
+          <h3 class="text-2xl font-bold text-ink">{{ checkedInCount() }}</h3>
+        </div>
       </div>
 
+      <!-- Table -->
       <div
-        class="bg-white border border-gray-200 p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
+        class="bg-white rounded-xl shadow overflow-x-auto border border-gray-200"
       >
-        <p class="text-gray-500 text-sm">Refunded</p>
-        <h3 class="text-2xl font-bold text-ink">6</h3>
-      </div>
-
-      <div
-        class="bg-white border border-gray-200 p-4 rounded-lg text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
-      >
-        <p class="text-gray-500 text-sm">Free Orders</p>
-        <h3 class="text-2xl font-bold text-ink">12</h3>
+        <table class="min-w-full text-left">
+          <thead class="bg-gray-50 text-ink text-sm">
+            <tr>
+              <th class="px-6 py-3 font-semibold">Order ID</th>
+              <th class="px-6 py-3 font-semibold">Event</th>
+              <th class="px-6 py-3 font-semibold">Buyer</th>
+              <th class="px-6 py-3 font-semibold">Tickets</th>
+              <th class="px-6 py-3 font-semibold">Total</th>
+              <th class="px-6 py-3 font-semibold">Type</th>
+              <th class="px-6 py-3 font-semibold">Status</th>
+              <th class="px-6 py-3 font-semibold">Date</th>
+              <th class="px-6 py-3 font-semibold text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="text-ink/90 text-sm divide-y divide-gray-100">
+            @for (order of orders(); track order.order_id) {
+              <tr class="hover:bg-gray-50 transition-all">
+                <td class="px-6 py-4 font-semibold">
+                  #{{ order.order_id.split("-")[0].toUpperCase() }}
+                </td>
+                <td class="px-6 py-4">{{ order.event }}</td>
+                <td class="px-6 py-4">{{ order.buyer }}</td>
+                <td class="px-6 py-4">{{ order.tickets }}</td>
+                <td class="px-6 py-4 font-semibold">{{ order.total }}</td>
+                <td class="px-6 py-4">
+                  <span
+                    class="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-600"
+                  >
+                    {{ order.type }}
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  <span
+                    class="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide"
+                    [ngClass]="{
+                      'bg-success/10 text-success-dark':
+                        order.status === 'paid' || order.status === 'completed',
+                      'bg-accent/20 text-accent-dark':
+                        order.status === 'pending',
+                    }"
+                  >
+                    {{ order.status }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-gray-500">
+                  {{ order.date | date: "MMM d, y" }}
+                </td>
+                <td class="px-6 py-4 text-right">
+                  <button
+                    (click)="openDetails(order)"
+                    class="text-brand font-semibold hover:underline"
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="9" class="text-center py-10 text-gray-500">
+                  No orders found for this event.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
     </div>
-
-    <div
-      class="bg-white rounded-xl shadow overflow-x-auto border border-gray-200"
-    >
-      <table class="min-w-full text-left">
-        <!-- Table Header -->
-        <thead class="bg-gray-50 text-ink">
-          <tr>
-            <th class="px-6 py-3 font-semibold">Order ID</th>
-            <th class="px-6 py-3 font-semibold">Event</th>
-            <th class="px-6 py-3 font-semibold">Buyer</th>
-            <th class="px-6 py-3 font-semibold">Tickets</th>
-            <th class="px-6 py-3 font-semibold">Total</th>
-            <th class="px-6 py-3 font-semibold">Type</th>
-            <th class="px-6 py-3 font-semibold">Status</th>
-            <th class="px-6 py-3 font-semibold">Date</th>
-          </tr>
-        </thead>
-
-        <!-- Table Body -->
-        <tbody class="text-ink/90">
-          <tr class="border-b border-gray-100 hover:bg-gray-50 transition-all">
-            <td class="px-6 py-3 font-semibold">#EVT-239</td>
-            <td class="px-6 py-3">Tech Expo 2025</td>
-            <td class="px-6 py-3">John Doe</td>
-            <td class="px-6 py-3">2</td>
-            <td class="px-6 py-3">₦20,000</td>
-            <td class="px-6 py-3">
-              <span
-                class="bg-success/10 text-success-dark px-3 py-1 rounded-full text-sm font-medium"
-                >Paid</span
-              >
-            </td>
-            <td class="px-6 py-3">
-              <span
-                class="bg-success/10 text-success-dark px-3 py-1 rounded-full text-sm font-medium"
-                >Completed</span
-              >
-            </td>
-            <td class="px-6 py-3">Oct 20, 2025</td>
-          </tr>
-
-          <tr class="border-b border-gray-100 hover:bg-gray-50 transition-all">
-            <td class="px-6 py-3 font-semibold">#EVT-240</td>
-            <td class="px-6 py-3">Music Fest</td>
-            <td class="px-6 py-3">Ada Eze</td>
-            <td class="px-6 py-3">1</td>
-            <td class="px-6 py-3">₦0</td>
-            <td class="px-6 py-3">
-              <span
-                class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium"
-                >Free</span
-              >
-            </td>
-            <td class="px-6 py-3">
-              <span
-                class="bg-accent/10 text-accent-dark px-3 py-1 rounded-full text-sm font-medium"
-                >Pending</span
-              >
-            </td>
-            <td class="px-6 py-3">Oct 21, 2025</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  }
 </section>

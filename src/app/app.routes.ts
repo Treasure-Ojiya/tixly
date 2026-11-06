@@ -1,51 +1,379 @@
+// import { Routes } from '@angular/router';
+// import { authGuard } from './core/guard/auth-guard';
+// import { guestGuard } from './core/guard/guest-guard';
+
+// export const routes: Routes = [
+//   {
+//     path: '',
+//     redirectTo: 'home',
+//     pathMatch: 'full',
+//   },
+
+//   {
+//     path: 'home',
+//     loadComponent: () => import('./pages/home/home').then((m) => m.Home),
+//   },
+
+//   {
+//     path: 'queue',
+//     loadComponent: () => import('./pages/queue/queue').then((m) => m.Queue),
+//     data: { hideFooter: true },
+//     canActivate: [authGuard],
+//   },
+
+//   {
+//     path: 'spaces',
+//     loadComponent: () => import('./pages/spaces/spaces').then((m) => m.Spaces),
+//     canActivate: [authGuard],
+//   },
+
+//   {
+//     path: 'explore',
+//     loadComponent: () =>
+//       import('./pages/explore/explore').then((m) => m.Explore),
+//   },
+
+//   {
+//     path: 'events/:id',
+//     loadComponent: () =>
+//       import('./pages/event-details/event-details').then((m) => m.EventDetails),
+//     data: { hideFooter: true },
+//   },
+
+//   {
+//     path: 'payment',
+//     loadComponent: () =>
+//       import('./pages/payments/payments').then((m) => m.Payment),
+//     data: { hideFooter: true },
+//     canActivate: [authGuard],
+//   },
+
+//   {
+//     path: 'payments/payment-callback',
+//     loadComponent: () =>
+//       import('./pages/payments/payment-callback/payment-callback').then(
+//         (m) => m.PaymentCallback,
+//       ),
+//     data: { hideLayout: true },
+//     canActivate: [authGuard],
+//   },
+
+//   {
+//     path: 'profile',
+//     loadComponent: () =>
+//       import('./pages/profile/profile').then((m) => m.Profile),
+//     data: { hideFooter: true },
+//     canActivate: [authGuard],
+//   },
+
+//   {
+//     path: 'bookings/:id',
+//     loadComponent: () =>
+//       import('./pages/booking-details/booking-details').then(
+//         (m) => m.BookingDetails,
+//       ),
+//     data: { hideFooter: true },
+//     canActivate: [authGuard],
+//   },
+//   {
+//     path: 'auth',
+//     children: [
+//       {
+//         path: 'authentication',
+//         loadComponent: () =>
+//           import('./pages/auth/authentication/authentication').then(
+//             (m) => m.Authentication,
+//           ),
+//         data: { hideLayout: true },
+//         canActivate: [guestGuard],
+//       },
+
+//       {
+//         path: 'forgot-password',
+//         loadComponent: () =>
+//           import('./pages/auth/forgot-password/forgot-password').then(
+//             (m) => m.ForgotPassword,
+//           ),
+//         data: { hideLayout: true },
+//       },
+
+//       {
+//         path: 'reset-password',
+//         loadComponent: () =>
+//           import('./pages/auth/reset-password/reset-password').then(
+//             (m) => m.ResetPassword,
+//           ),
+//         data: { hideLayout: true },
+//       },
+//     ],
+//   },
+
+//   {
+//     path: 'events',
+//     children: [
+//       {
+//         path: '',
+//         redirectTo: '/organizer',
+//         pathMatch: 'full',
+//       },
+//       {
+//         path: 'organizer',
+//         loadComponent: () =>
+//           import('./pages/events/organizer/organizer-layout/organizer-layout').then(
+//             (m) => m.OrganizerLayout,
+//           ),
+//         data: { hideLayout: true },
+//         canActivate: [authGuard],
+
+//         children: [
+//           {
+//             path: '',
+//             redirectTo: 'dashboard',
+//             pathMatch: 'full',
+//           },
+
+//           {
+//             path: 'dashboard',
+//             loadComponent: () =>
+//               import('./pages/events/organizer/dashboard/dashboard').then(
+//                 (m) => m.Dashboard,
+//               ),
+//             data: { hideLayout: true },
+//           },
+
+//           {
+//             path: 'manage-events',
+//             loadComponent: () =>
+//               import('./pages/events/organizer/manage-events/manage-events').then(
+//                 (m) => m.ManageEvents,
+//               ),
+//             data: { hideLayout: true },
+//           },
+
+//           {
+//             path: 'create-event',
+//             loadComponent: () =>
+//               import('./pages/events/organizer/create-event/create-event').then(
+//                 (m) => m.CreateEvent,
+//               ),
+//             data: { hideLayout: true },
+//           },
+
+//           {
+//             path: 'orders',
+//             loadComponent: () =>
+//               import('./pages/events/organizer/orders/orders').then(
+//                 (m) => m.Orders,
+//               ),
+//             data: { hideLayout: true },
+//           },
+
+//           {
+//             path: 'finance',
+//             loadComponent: () =>
+//               import('./pages/events/organizer/finance/finance').then(
+//                 (m) => m.Finance,
+//               ),
+//             data: { hideLayout: true },
+//           },
+
+//           {
+//             path: 'setting',
+//             loadComponent: () =>
+//               import('./pages/events/organizer/setting/setting').then(
+//                 (m) => m.Setting,
+//               ),
+//             data: { hideLayout: true },
+//           },
+//         ],
+//       },
+
+//       // Must stay after 'organizer', otherwise ':id' would swallow it.
+//     ],
+//   },
+
+//   {
+//     path: 'listings',
+//     children: [
+//       {
+//         path: 'provider',
+//         loadComponent: () =>
+//           import('./pages/listings/provider/providers-layout/providers-layout').then(
+//             (m) => m.ProvidersLayout,
+//           ),
+//         data: { hideLayout: true },
+//         canActivate: [authGuard],
+
+//         children: [
+//           {
+//             path: '',
+//             redirectTo: 'dashboard',
+//             pathMatch: 'full',
+//           },
+
+//           {
+//             path: 'dashboard',
+//             loadComponent: () =>
+//               import('./pages/listings/provider/dashboard/dashboard').then(
+//                 (m) => m.Dashboard,
+//               ),
+//             data: { hideLayout: true },
+//           },
+
+//           {
+//             path: 'list-space',
+//             loadComponent: () =>
+//               import('./pages/listings/provider/list-space/list-space').then(
+//                 (m) => m.ListSpace,
+//               ),
+//             data: { hideLayout: true },
+//           },
+
+//           {
+//             path: 'manage-listings',
+//             loadComponent: () =>
+//               import('./pages/listings/provider/manage-listings/manage-listings').then(
+//                 (m) => m.ManageListings,
+//               ),
+//             data: { hideLayout: true },
+//           },
+//         ],
+//       },
+//     ],
+//   },
+
+//   {
+//     path: 'contact',
+//     loadComponent: () =>
+//       import('./pages/contact/contact').then((m) => m.Contact),
+//   },
+
+//   { path: 'my-booking', redirectTo: 'queue' },
+//   { path: '**', redirectTo: 'home' },
+// ];
+
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guard/auth-guard';
 import { guestGuard } from './core/guard/guest-guard';
+import { MainLayout } from './layouts/main-layout/main-layout';
+import { MainLayoutNoFooter } from './layouts/main-layout-no-footer/main-layout-no-footer';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+
   {
     path: '',
-    redirectTo: 'home',
-    pathMatch: 'full',
+    component: MainLayout,
+    children: [
+      {
+        path: 'home',
+        loadComponent: () => import('./pages/home/home').then((m) => m.Home),
+      },
+      {
+        path: 'about',
+        loadComponent: () => import('./pages/about/about').then((m) => m.About),
+      },
+      {
+        path: 'contact',
+        loadComponent: () =>
+          import('./pages/contact/contact').then((m) => m.Contact),
+      },
+      {
+        path: 'explore',
+        loadComponent: () =>
+          import('./pages/explore/explore').then((m) => m.Explore),
+      },
+    ],
   },
 
   {
-    path: 'home',
-    loadComponent: () => import('./pages/home/home').then((m) => m.Home),
-  },
-
-  {
-    path: 'queue',
-    loadComponent: () => import('./pages/queue/queue').then((m) => m.Queue),
-    data: { hideFooter: true },
-    canActivate: [authGuard],
-  },
-
-  {
-    path: 'spaces',
-    loadComponent: () => import('./pages/spaces/spaces').then((m) => m.Spaces),
-    canActivate: [authGuard],
-  },
-
-  {
-    path: 'explore',
+    path: 'events/organizer',
     loadComponent: () =>
-      import('./pages/explore/explore').then((m) => m.Explore),
-  },
-
-  {
-    path: 'events/:id',
-    loadComponent: () =>
-      import('./pages/event-details/event-details').then((m) => m.EventDetails),
-    data: { hideFooter: true },
-  },
-
-  {
-    path: 'payment',
-    loadComponent: () =>
-      import('./pages/payments/payments').then((m) => m.Payment),
-    data: { hideFooter: true },
+      import('./pages/events/organizer/organizer-layout/organizer-layout').then(
+        (m) => m.OrganizerLayout,
+      ),
     canActivate: [authGuard],
+    data: { hideLayout: true },
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./pages/events/organizer/dashboard/dashboard').then(
+            (m) => m.Dashboard,
+          ),
+      },
+      {
+        path: 'create-event',
+        loadComponent: () =>
+          import('./pages/events/organizer/create-event/create-event').then(
+            (m) => m.CreateEvent,
+          ),
+      },
+      {
+        path: 'manage-events',
+        loadComponent: () =>
+          import('./pages/events/organizer/manage-events/manage-events').then(
+            (m) => m.ManageEvents,
+          ),
+      },
+      {
+        path: 'orders/:id', // <-- Add :id here
+        loadComponent: () =>
+          import('./pages/events/organizer/orders/orders').then(
+            (m) => m.Orders,
+          ),
+      },
+      {
+        path: 'finance',
+        loadComponent: () =>
+          import('./pages/events/organizer/finance/finance').then(
+            (m) => m.Finance,
+          ),
+      },
+      {
+        path: 'setting',
+        loadComponent: () =>
+          import('./pages/events/organizer/setting/setting').then(
+            (m) => m.Setting,
+          ),
+      },
+    ],
+  },
+
+  {
+    path: '',
+    component: MainLayoutNoFooter,
+    children: [
+      {
+        path: 'queue',
+        loadComponent: () => import('./pages/queue/queue').then((m) => m.Queue),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'events/:id',
+        loadComponent: () =>
+          import('./pages/event-details/event-details').then(
+            (m) => m.EventDetails,
+          ),
+      },
+      {
+        path: 'payment',
+        loadComponent: () =>
+          import('./pages/payments/payments').then((m) => m.Payment),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./pages/profile/profile').then((m) => m.Profile),
+        canActivate: [authGuard],
+      },
+    ],
   },
 
   {
@@ -54,18 +382,8 @@ export const routes: Routes = [
       import('./pages/payments/payment-callback/payment-callback').then(
         (m) => m.PaymentCallback,
       ),
-    data: { hideLayout: true },
     canActivate: [authGuard],
   },
-
-  {
-    path: 'profile',
-    loadComponent: () =>
-      import('./pages/profile/profile').then((m) => m.Profile),
-    data: { hideFooter: true },
-    canActivate: [authGuard],
-  },
-
   {
     path: 'auth',
     children: [
@@ -75,169 +393,58 @@ export const routes: Routes = [
           import('./pages/auth/authentication/authentication').then(
             (m) => m.Authentication,
           ),
-        data: { hideLayout: true },
         canActivate: [guestGuard],
       },
-
       {
         path: 'forgot-password',
         loadComponent: () =>
           import('./pages/auth/forgot-password/forgot-password').then(
             (m) => m.ForgotPassword,
           ),
-        data: { hideLayout: true },
       },
-
       {
         path: 'reset-password',
         loadComponent: () =>
           import('./pages/auth/reset-password/reset-password').then(
             (m) => m.ResetPassword,
           ),
-        data: { hideLayout: true },
       },
     ],
   },
 
-  {
-    path: 'events',
-    children: [
-      {
-        path: '',
-        redirectTo: '/organizer',
-        pathMatch: 'full',
-      },
-      {
-        path: 'organizer',
-        loadComponent: () =>
-          import('./pages/events/organizer/organizer-layout/organizer-layout').then(
-            (m) => m.OrganizerLayout,
-          ),
-        data: { hideLayout: true },
-        canActivate: [authGuard],
-
-        children: [
-          {
-            path: '',
-            redirectTo: 'dashboard',
-            pathMatch: 'full',
-          },
-
-          {
-            path: 'dashboard',
-            loadComponent: () =>
-              import('./pages/events/organizer/dashboard/dashboard').then(
-                (m) => m.Dashboard,
-              ),
-            data: { hideLayout: true },
-          },
-
-          {
-            path: 'manage-events',
-            loadComponent: () =>
-              import('./pages/events/organizer/manage-events/manage-events').then(
-                (m) => m.ManageEvents,
-              ),
-            data: { hideLayout: true },
-          },
-
-          {
-            path: 'create-event',
-            loadComponent: () =>
-              import('./pages/events/organizer/create-event/create-event').then(
-                (m) => m.CreateEvent,
-              ),
-            data: { hideLayout: true },
-          },
-
-          {
-            path: 'orders',
-            loadComponent: () =>
-              import('./pages/events/organizer/orders/orders').then(
-                (m) => m.Orders,
-              ),
-            data: { hideLayout: true },
-          },
-
-          {
-            path: 'finance',
-            loadComponent: () =>
-              import('./pages/events/organizer/finance/finance').then(
-                (m) => m.Finance,
-              ),
-            data: { hideLayout: true },
-          },
-
-          {
-            path: 'setting',
-            loadComponent: () =>
-              import('./pages/events/organizer/setting/setting').then(
-                (m) => m.Setting,
-              ),
-            data: { hideLayout: true },
-          },
-        ],
-      },
-
-      // Must stay after 'organizer', otherwise ':id' would swallow it.
-    ],
-  },
-
-  {
-    path: 'listings',
-    children: [
-      {
-        path: 'provider',
-        loadComponent: () =>
-          import('./pages/listings/provider/providers-layout/providers-layout').then(
-            (m) => m.ProvidersLayout,
-          ),
-        data: { hideLayout: true },
-        canActivate: [authGuard],
-
-        children: [
-          {
-            path: '',
-            redirectTo: 'dashboard',
-            pathMatch: 'full',
-          },
-
-          {
-            path: 'dashboard',
-            loadComponent: () =>
-              import('./pages/listings/provider/dashboard/dashboard').then(
-                (m) => m.Dashboard,
-              ),
-            data: { hideLayout: true },
-          },
-
-          {
-            path: 'list-space',
-            loadComponent: () =>
-              import('./pages/listings/provider/list-space/list-space').then(
-                (m) => m.ListSpace,
-              ),
-            data: { hideLayout: true },
-          },
-
-          {
-            path: 'manage-listings',
-            loadComponent: () =>
-              import('./pages/listings/provider/manage-listings/manage-listings').then(
-                (m) => m.ManageListings,
-              ),
-            data: { hideLayout: true },
-          },
-        ],
-      },
-    ],
-  },
-
-  {
-    path: 'contact',
-    loadComponent: () =>
-      import('./pages/contact/contact').then((m) => m.Contact),
-  },
+  // Provider's own layout
+  // {
+  //   path: 'listings/provider',
+  //   loadComponent: () =>
+  //     import('./pages/listings/provider/providers-layout/providers-layout')
+  //       .then(m => m.ProvidersLayout),
+  //   canActivate: [authGuard],
+  //   children: [
+  //     {
+  //       path: '',
+  //       redirectTo: 'dashboard',
+  //       pathMatch: 'full',
+  //     },
+  //     {
+  //       path: 'dashboard',
+  //       loadComponent: () =>
+  //         import('./pages/listings/provider/dashboard/dashboard')
+  //           .then(m => m.Dashboard),
+  //     },
+  //     {
+  //       path: 'list-space',
+  //       loadComponent: () =>
+  //         import('./pages/listings/provider/list-space/list-space')
+  //           .then(m => m.ListSpace),
+  //     },
+  //     {
+  //       path: 'manage-listings',
+  //       loadComponent: () =>
+  //         import('./pages/listings/provider/manage-listings/manage-listings')
+  //           .then(m => m.ManageListings),
+  //     },
+  //   ],
+  // },
 
   { path: 'my-booking', redirectTo: 'queue' },
   { path: '**', redirectTo: 'home' },

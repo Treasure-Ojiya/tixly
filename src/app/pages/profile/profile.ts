@@ -1,12 +1,18 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { UserService } from '../../core/services/user-service/user-service';
+import { MatDialog } from '@angular/material/dialog';
 import { DatePipe } from '../../shared/pipes/date-pipe';
+import { UserService } from '../../core/services/user-service/user-service';
 import { CartService } from '../../core/services/cart-service/cart-service';
-import { CartItem } from '../../app-model/model';
+import {
+  CartItem,
+  UserBookedTicketResponse,
+  UserModel,
+} from '../../app-model/model';
+import { ProfileModal } from '../../shared/modals/profile-modal/profile-modal';
 
-type ProfileTab = 'overview' | 'queue' | 'saved' | 'following';
+type ProfileTab = 'overview' | 'queue' | 'bookings' | 'following';
 
 @Component({
   selector: 'app-profile',
@@ -18,6 +24,7 @@ export class Profile implements OnInit {
   private userService = inject(UserService);
   private cartService = inject(CartService);
   private router = inject(Router);
+  private dialog = inject(MatDialog);
 
   firstName = '';
   lastName = '';
@@ -34,6 +41,7 @@ export class Profile implements OnInit {
   tabs: { id: ProfileTab; label: string }[] = [
     { id: 'overview', label: 'Overview' },
     { id: 'queue', label: 'Queue' },
+    { id: 'bookings', label: 'Bookings' },
   ];
 
   get activeTabLabel(): string {
@@ -49,12 +57,13 @@ export class Profile implements OnInit {
     { value: 14, label: 'Following' },
   ];
 
-  // =========================
-  // Queue (cart)
-  // =========================
+  user = signal<UserModel | null>(null);
   queue = signal<CartItem[]>([]);
+  bookings = signal<UserBookedTicketResponse[]>([]);
   queueLoading = signal(true);
   queueError = signal('');
+  bookingsLoading = signal(true);
+  bookingsError = signal('');
 
   // First few upcoming cart items for the Overview tab.
   upcomingQueue = computed(() => {
@@ -74,30 +83,13 @@ export class Profile implements OnInit {
     ),
   );
 
-  recent = [
-    {
-      title: 'Art Exhibition',
-      place: 'Lekki, Lagos',
-      image: 'assets/images/event-3.jpg',
-    },
-    {
-      title: 'Food & Culture Festival',
-      place: 'Ikeja, Lagos',
-      image: 'assets/images/event-4.jpg',
-    },
-    {
-      title: 'Creative Workshop',
-      place: 'Yaba, Lagos',
-      image: 'assets/images/event-5.jpg',
-    },
-  ];
-
   // =========================
   // Lifecycle
   // =========================
   ngOnInit(): void {
     this.userDetails();
     this.loadQueue();
+    this.loadBookings();
   }
 
   loadQueue(): void {
@@ -113,6 +105,23 @@ export class Profile implements OnInit {
         console.error('Failed to load queue:', error);
         this.queueError.set('We could not load your queue.');
         this.queueLoading.set(false);
+      },
+    });
+  }
+
+  loadBookings(): void {
+    this.bookingsLoading.set(true);
+    this.bookingsError.set('');
+
+    this.userService.getBookedTickets().subscribe({
+      next: (bookings) => {
+        this.bookings.set(bookings);
+        this.bookingsLoading.set(false);
+      },
+      error: (error) => {
+        console.error('Failed to load bookings:', error);
+        this.bookingsError.set('We could not load your bookings.');
+        this.bookingsLoading.set(false);
       },
     });
   }
@@ -151,6 +160,8 @@ export class Profile implements OnInit {
   userDetails(): void {
     this.userService.getUser().subscribe({
       next: (user) => {
+        this.user.set(user); // This was missing
+
         this.firstName = user.first_name;
         this.lastName = user.last_name;
         this.email = user.email;
@@ -165,5 +176,26 @@ export class Profile implements OnInit {
     const first = this.firstName ? this.firstName.charAt(0).toUpperCase() : '';
     const last = this.lastName ? this.lastName.charAt(0).toUpperCase() : '';
     return first + last;
+  }
+
+  openEditProfile() {
+    const currentUser = this.user();
+    if (!currentUser) return;
+
+    this.dialog
+      .open(ProfileModal, {
+        data: currentUser,
+        width: '480px',
+        maxWidth: '94vw',
+        autoFocus: 'dialog',
+      })
+      .afterClosed()
+      .subscribe((refresh) => {
+        if (refresh) this.userDetails(); // Refresh if saved
+      });
+  }
+
+  goToBooking(booking: UserBookedTicketResponse) {
+    this.router.navigate(['/profile/bookings', booking.uuid]);
   }
 }

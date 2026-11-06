@@ -14,8 +14,8 @@
 
       <div class="flex">
         <img
-          src="assets/logo/evvnt-logo-white-1.png"
-          alt="Evvnt-Logo"
+          src="assets/logo/tixly-logo.png"
+          alt="Tixly-Logo"
           width="100"
           height="100"
           class="mr-3"
@@ -36,15 +36,15 @@
       class="transition-all duration-500 bg-linear-to-br from-[#F5F5F5] via-[#EAEAFD] to-[#DDEBFF] border-r border-gray-300 shadow-lg flex flex-col py-6 px-3 space-y-8"
       [ngClass]="{
         'w-64 items-start px-4': !isCollapsed,
-        'w-20 items-center': isCollapsed
+        'w-20 items-center': isCollapsed,
       }"
     >
       <!-- Logo -->
       <div class="flex items-center justify-center w-full">
         <a routerLink="/home" class="flex items-center space-x-3">
           <img src="assets/icons/home.svg" alt="home" width="20" height="20" />
-          @if(!isCollapsed) {
-          <span class="text-[#1F3B6C] font-semibold text-lg">Home</span>
+          @if (!isCollapsed) {
+            <span class="text-[#1F3B6C] font-semibold text-lg">Home</span>
           }
         </a>
       </div>
@@ -57,8 +57,8 @@
           class="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-300 transition w-full"
         >
           <img src="assets/icons/dashboard.svg" width="20" height="20" />
-          @if(!isCollapsed) {
-          <span class="font-medium text-[#1F3B6C]">Dashboard</span>
+          @if (!isCollapsed) {
+            <span class="font-medium text-[#1F3B6C]">Dashboard</span>
           }
         </a>
 
@@ -68,9 +68,8 @@
           class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-300 transition w-full"
         >
           <img src="assets/icons/create.svg" width="20" height="20" />
-          @if(!isCollapsed) {
-          <span class="font-medium text-[#1F3B6C]">List Space</span>
-
+          @if (!isCollapsed) {
+            <span class="font-medium text-[#1F3B6C]">List Space</span>
           }
         </a>
 
@@ -80,8 +79,8 @@
           class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-300 transition w-full"
         >
           <img src="assets/icons/manage.svg" width="20" height="20" />
-          @if(!isCollapsed) {
-          <span class="font-medium text-[#1F3B6C]">Manage Listings</span>
+          @if (!isCollapsed) {
+            <span class="font-medium text-[#1F3B6C]">Manage Listings</span>
           }
         </a>
 
@@ -91,8 +90,8 @@
           class="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-300 transition w-full"
         >
           <img src="assets/icons/settings-event.svg" width="20" height="20" />
-          @if(!isCollapsed) {
-          <span class="font-medium text-[#1F3B6C]">Settings</span>
+          @if (!isCollapsed) {
+            <span class="font-medium text-[#1F3B6C]">Settings</span>
           }
         </a>
       </nav>

@@ -1,101 +1,167 @@
-<section class="px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Header -->
-  <div class="mb-10 border-b border-gray-200 pb-2">
-    <h1 class="text-3xl md:text-4xl font-bold text-ink">Dashboard</h1>
+<section class="px-2 sm:px-6 lg:px-8 py-6">
+  <!-- ═════════ Header ═════════ -->
+  <div
+    class="mb-2 flex flex-wrap items-end justify-between gap-4 border-b border-gray-200 pb-3"
+  >
+    <div>
+      <h1 class="text-1xl md:text-3xl font-bold text-ink">Dashboard</h1>
+      <p class="mt-1 text-sm text-gray-500">
+        A quick look at how your events are doing.
+      </p>
+    </div>
+
+    <a
+      routerLink="/events/organizer/create-event"
+      class="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+    >
+      <i class="fas fa-plus text-xs" aria-hidden="true"></i>
+      Create Event
+    </a>
   </div>
 
-  <!-- Metrics Summary -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-    <div
-      class="bg-white border border-gray-200 p-5 rounded-xl text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
+  <!-- ═════════ Revenue (the one highlighted metric) ═════════ -->
+  <div
+    class="flex items-center justify-between gap-4 rounded-2xl border border-brand/20 bg-brand-soft px-6 py-2 transition-shadow hover:shadow-md"
+  >
+    <div>
+      <p class="text-sm font-medium text-gray-500">Revenue</p>
+      <p class="mt-1 text-3xl font-bold text-brand sm:text-4xl">₦0.00</p>
+      <p class="mt-1 text-xs text-gray-500">Across all your events</p>
+    </div>
+
+    <span
+      class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white text-xl text-brand shadow-sm"
+      aria-hidden="true"
     >
-      <p class="text-gray-500 text-sm">Total Events</p>
-      <h3 class="text-2xl font-bold text-ink mt-1">0</h3>
+      <i class="fas fa-money-bill-wave"></i>
+    </span>
+  </div>
+
+  <!-- ═════════ Metrics ═════════ -->
+  <dl class="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+    <div
+      class="rounded-2xl border border-gray-200 bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
+    >
+      <span
+        class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft text-brand"
+        aria-hidden="true"
+      >
+        <i class="fas fa-layer-group"></i>
+      </span>
+      <dt class="mt-4 text-sm text-gray-500">Total Events</dt>
+      <dd class="mt-1 text-2xl font-bold text-ink">
+        {{ isLoading() ? "—" : totalEvents() }}
+      </dd>
     </div>
 
     <!-- Teal is kept here because "active" is a status -->
     <div
-      class="bg-white border border-gray-200 p-5 rounded-xl text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
+      class="rounded-2xl border border-gray-200 bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
     >
-      <p class="text-gray-500 text-sm flex items-center justify-center gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-success"></span>
+      <span
+        class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft text-brand"
+        aria-hidden="true"
+      >
+        <i class="fas fa-calendar-check"></i>
+      </span>
+      <dt class="mt-4 flex items-center gap-1.5 text-sm text-gray-500">
+        <span class="h-2 w-2 rounded-full bg-success" aria-hidden="true"></span>
         Active Events
-      </p>
-      <h3 class="text-2xl font-bold text-ink mt-1">0</h3>
+      </dt>
+      <dd class="mt-1 text-2xl font-bold text-ink">
+        {{ isLoading() ? "—" : activeEvents() }}
+      </dd>
     </div>
 
     <div
-      class="bg-white border border-gray-200 p-5 rounded-xl text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
+      class="rounded-2xl border border-gray-200 bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
     >
-      <p class="text-gray-500 text-sm">Upcoming Events</p>
-      <h3 class="text-2xl font-bold text-ink mt-1">0</h3>
-    </div>
-
-    <div
-      class="bg-white border border-gray-200 p-5 rounded-xl text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
-    >
-      <p class="text-gray-500 text-sm">All Time Tickets Sold</p>
-      <h3 class="text-2xl font-bold text-ink mt-1">0</h3>
-    </div>
-
-    <!-- Revenue is the one highlighted metric -->
-    <div
-      class="bg-brand-soft border border-brand/20 p-5 rounded-xl text-center transition-all transform hover:-translate-y-1 hover:shadow-md"
-    >
-      <p class="text-gray-500 text-sm">Revenue</p>
-      <h3 class="text-2xl font-bold text-brand mt-1">₦0.00</h3>
-    </div>
-  </div>
-
-  <!-- Recent Activity -->
-  <div class="mt-10">
-    <h3 class="text-xl font-semibold text-ink mb-4">Recent Activity</h3>
-    <ul class="space-y-3">
-      <li
-        class="bg-white p-4 rounded-lg shadow-sm flex items-center hover:shadow-md transition"
+      <span
+        class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft text-brand"
+        aria-hidden="true"
       >
-        <i class="fa fa-ticket-alt text-brand mr-3"></i>
-        <span>Lorem ipsum dolor sit amet.<strong>Lorem, ipsum.</strong></span>
-      </li>
-      <li
-        class="bg-white p-4 rounded-lg shadow-sm flex items-center hover:shadow-md transition"
+        <i class="fas fa-calendar-alt"></i>
+      </span>
+      <dt class="mt-4 text-sm text-gray-500">Upcoming Events</dt>
+      <dd class="mt-1 text-2xl font-bold text-ink">
+        {{ isLoading() ? "—" : upcomingEvents() }}
+      </dd>
+    </div>
+
+    <div
+      class="rounded-2xl border border-gray-200 bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
+    >
+      <span
+        class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft text-brand"
+        aria-hidden="true"
       >
-        <i class="fa fa-calendar text-brand mr-3"></i>
-        <span
-          ><strong>Lorem, ipsum dolor.</strong> Lorem ipsum dolor sit
-          amet.</span
+        <i class="fas fa-ticket-alt"></i>
+      </span>
+      <dt class="mt-4 text-sm text-gray-500">All Time Tickets Sold</dt>
+      <dd class="mt-1 text-2xl font-bold text-ink">
+        {{ isLoading() ? "—" : ticketsSold() }}
+      </dd>
+    </div>
+  </dl>
+
+  <!-- ═════════ Activity + Quick actions ═════════ -->
+  <div class="mt-10 grid gap-8 lg:grid-cols-3">
+    <!-- Recent Activity -->
+    <div class="lg:col-span-2">
+      <h2 class="mb-4 text-xl font-semibold text-ink">Recent Activity</h2>
+
+      <ul
+        class="divide-y divide-gray-100 overflow-hidden rounded-2xl border border-gray-200 bg-white"
+      >
+        @if (isLoading()) {
+          <li class="px-5 py-8 text-center text-sm text-gray-500">
+            Loading recent activity...
+          </li>
+        } @else {
+          <li class="px-5 py-8 text-center text-sm text-gray-500">
+            Recent activity will appear here.
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- Quick Actions: one primary, the rest outline -->
+    <div>
+      <h2 class="mb-4 text-xl font-semibold text-ink">Quick Actions</h2>
+
+      <nav class="flex flex-col gap-3" aria-label="Quick actions">
+        <!-- <a
+          routerLink="/events/organizer/create-event"
+          class="flex items-center justify-between rounded-xl bg-brand px-5 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
         >
-      </li>
-      <li
-        class="bg-white p-4 rounded-lg shadow-sm flex items-center hover:shadow-md transition"
-      >
-        <i class="fa fa-money-bill-wave text-brand mr-3"></i>
-        <span>Lorem, ipsum dolor.: <strong>₦0.00</strong></span>
-      </li>
-    </ul>
-  </div>
+          Create Event
+          <i class="fas fa-arrow-right text-xs" aria-hidden="true"></i>
+        </a> -->
 
-  <!-- Quick Actions: one primary, the rest outline -->
-  <div class="flex flex-wrap gap-4 mt-10">
-    <a
-      routerLink="/events/organizer/create-event"
-      class="bg-brand text-white px-6 py-3 rounded-lg hover:bg-brand-dark transition"
-      >Create Event</a
-    >
-    <a
-      routerLink="/events/organizer/manage-event"
-      class="border border-ink text-ink px-6 py-3 rounded-lg hover:bg-brand-dark hover:text-white transition"
-      >Manage Events</a
-    >
-    <a
-      routerLink="/events/organizer/finance"
-      class="border border-ink text-ink px-6 py-3 rounded-lg hover:bg-brand-dark hover:text-white transition"
-      >View Finance</a
-    >
-    <a
-      routerLink="/events/organizer/setting"
-      class="border border-ink text-ink px-6 py-3 rounded-lg hover:bg-brand-dark hover:text-white transition"
-      >Settings</a
-    >
+        <a
+          routerLink="/events/organizer/manage-event"
+          class="flex items-center justify-between rounded-xl border border-ink bg-white px-5 py-3.5 text-sm font-semibold text-ink transition-colors hover:bg-brand-dark hover:text-white"
+        >
+          Manage Events
+          <i class="fas fa-arrow-right text-xs" aria-hidden="true"></i>
+        </a>
+
+        <a
+          routerLink="/events/organizer/finance"
+          class="flex items-center justify-between rounded-xl border border-ink bg-white px-5 py-3.5 text-sm font-semibold text-ink transition-colors hover:bg-brand-dark hover:text-white"
+        >
+          View Finance
+          <i class="fas fa-arrow-right text-xs" aria-hidden="true"></i>
+        </a>
+
+        <a
+          routerLink="/events/organizer/setting"
+          class="flex items-center justify-between rounded-xl border border-ink bg-white px-5 py-3.5 text-sm font-semibold text-ink transition-colors hover:bg-brand-dark hover:text-white"
+        >
+          Settings
+          <i class="fas fa-arrow-right text-xs" aria-hidden="true"></i>
+        </a>
+      </nav>
+    </div>
   </div>
 </section>
