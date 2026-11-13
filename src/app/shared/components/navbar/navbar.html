@@ -197,7 +197,7 @@
         [routerLinkActiveOptions]="{ exact: true }"
         [attr.aria-label]="link.label"
         [title]="link.label"
-        class="flex flex-1 h-full flex-col items-center justify-center text-white/75 hover:text-white transition-colors duration-300"
+        class="flex flex-1 h-full flex-col items-center justify-center text-white hover:text-white transition-colors duration-300"
         (click)="closeCreateMenu()"
       >
         @switch (link.icon) {
@@ -263,7 +263,7 @@
         [attr.aria-expanded]="createMenuOpen"
         (click)="toggleCreateMenu($event)"
         class="flex flex-col items-center justify-center w-full h-full transition-colors duration-300"
-        [ngClass]="createMenuOpen ? 'text-[#fbd046]' : 'text-white/75'"
+        [ngClass]="createMenuOpen ? 'text-[#fbd046]' : 'text-white'"
       >
         <svg
           viewBox="0 0 24 24"

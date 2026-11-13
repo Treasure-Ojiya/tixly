@@ -1,5 +1,4 @@
-<div class="min-h-screen bg-surface pb-28 lg:pb-14">
-  @if (isLoading()) {
+<div class="min-h-screen bg-surface pb-40 lg:pb-14">  @if (isLoading()) {
     <div
       class="h-80 sm:h-96 bg-gray-200 animate-pulse"
       aria-hidden="true"
@@ -453,8 +452,7 @@
     </div>
 
     <div
-      class="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white backdrop-blur px-4 py-3 flex items-center justify-between gap-4"
-    >
+class="lg:hidden fixed inset-x-0 bottom-[calc(4rem_+_env(safe-area-inset-bottom))] z-40 border-t border-gray-200 bg-white backdrop-blur px-4 py-3 flex items-center justify-between gap-4"    >
       <div class="min-w-0">
         <p class="text-xs text-gray-500">
           {{

@@ -1,5 +1,4 @@
-<div class="min-h-screen overflow-x-clip bg-surface pb-28 lg:pb-14">
-  <div class="mx-auto max-w-5xl px-4 pt-24 sm:px-6 lg:px-8 lg:pt-28">
+<div class="min-h-screen overflow-x-clip bg-surface pb-40 lg:pb-14">  <div class="mx-auto max-w-5xl px-4 pt-24 sm:px-6 lg:px-8 lg:pt-28">
     @if (isLoading()) {
       <div class="space-y-4" aria-hidden="true">
         <div class="h-8 w-48 animate-pulse rounded bg-gray-200"></div>
@@ -478,8 +477,7 @@
 
         <!-- Step buttons (small screens only) -->
         <div
-          class="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white px-4 py-3 backdrop-blur lg:hidden"
-        >
+class="fixed inset-x-0 bottom-[calc(4rem_+_env(safe-area-inset-bottom))] z-40 border-t border-gray-200 bg-white px-4 py-3 backdrop-blur lg:hidden"        >
           @switch (step()) {
             @case (1) {
               <button
