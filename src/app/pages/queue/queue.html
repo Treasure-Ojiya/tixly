@@ -35,7 +35,7 @@
       </div>
     } @else if (loadError()) {
       <section
-        class="rounded-2xl border border-dashed border-gray-300 px-6 py-16 text-center"
+        class="rounded-2xl px-6 py-16 text-center"
         role="alert"
       >
         <h2 class="text-lg font-bold text-ink">Queue did not load</h2>
@@ -50,7 +50,7 @@
       </section>
     } @else if (items().length === 0) {
       <section
-        class="rounded-2xl border border-dashed border-gray-300 px-6 py-16 text-center"
+        class="rounded-2xl px-6 py-16 text-center"
       >
         <h2 class="text-lg font-bold text-ink">Your queue is empty</h2>
         <p class="text-sm text-gray-500 mt-1">
@@ -67,7 +67,7 @@
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
         @for (item of items(); track item.uuid) {
           <article
-            class="flex flex-col bg-white rounded-2xl border border-gray-200 overflow-hidden"
+            class="flex flex-col bg-white rounded-2xl  overflow-hidden"
           >
             <div class="relative">
               @if (item.event.image_url) {
@@ -137,9 +137,21 @@
                 <button
                   type="button"
                   (click)="removeItem(item)"
-                  class="ml-auto px-3 py-2 text-sm font-semibold text-gray-500 hover:text-danger-dark transition-colors cursor-pointer"
-                >
-                  Remove
+                  class="ml-auto px-3 py-2 text-sm font-semibold text-red-500 md:text-gray-500 hover:text-danger-dark md:hover:text-danger-dark transition-colors cursor-pointer"
+                >                        <svg
+                          viewBox="0 0 24 24"
+                          class="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 002 2h6a2 2 0 002-2l1-12M9 7V4h6v3"
+                          />
+                        </svg>
                 </button>
               </div>
             </div>
@@ -149,6 +161,9 @@
     }
   </section>
 
-  <!-- ===== UPCOMING (carousel, reuses feature-card) ===== -->
-  <app-feature-card />
+</div>
+
+<div>
+<!-- ===== UPCOMING (carousel, reuses feature-card) ===== -->
+<app-feature-card />
 </div>
