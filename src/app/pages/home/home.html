@@ -1,55 +1,55 @@
 <main class="bg-surface">
-  <section class="px-0">
+<section class="px-0">
+  <div
+    class="hero-banner relative flex flex-col justify-end text-white min-h-[500px] md:min-h-[600px] lg:min-h-[680px] rounded-b-4xl shadow-lg overflow-hidden"
+  >
     <div
-      class="hero-banner relative flex flex-col justify-end text-white min-h-[500px] md:min-h-[600px] lg:min-h-[680px] rounded-b-4xl shadow-lg overflow-hidden"
+      class="absolute inset-0 z-0 bg-linear-to-r from-ink/75 via-ink/30 to-transparent"
+    ></div>
+
+    <div
+      class="absolute inset-0 z-0 bg-linear-to-t from-ink/75 via-transparent to-transparent"
+    ></div>
+
+    <div
+      class="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pb-12 md:pb-14 lg:pb-16"
     >
       <div
-        class="absolute inset-0 z-0 bg-linear-to-r from-ink/65 via-ink/30 to-transparent"
-      ></div>
-
-      <div
-        class="absolute inset-0 z-0 bg-linear-to-t from-ink/65 via-transparent to-transparent"
-      ></div>
-
-      <div
-        class="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pb-12 md:pb-14 lg:pb-16"
+        class="flex flex-col items-center text-center lg:flex-row lg:items-end lg:justify-between lg:text-left gap-8"
       >
+        <div class="max-w-3xl">
+          <h1
+            class="text-white text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.05] tracking-tight drop-shadow-lg"
+          >
+            We craft experiences that inspire &amp; convert
+          </h1>
+
+          <p
+            class="text-base md:text-lg mb-0 text-gray-100 max-w-2xl mx-auto"
+          ></p>
+        </div>
+
         <div
-          class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8"
+          class="flex flex-wrap items-center justify-center lg:justify-start gap-3 shrink-0"
         >
-          <div class="max-w-3xl">
-            <h1
-              class="text-white text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.05] tracking-tight drop-shadow-lg"
-            >
-              We craft experiences that inspire &amp; convert
-            </h1>
+          <a
+            routerLink="/explore"
+            class="bg-white text-ink hover:bg-gray-100 font-bold py-3.5 px-6 md:px-8 rounded-xl shadow-md transition-all duration-300 text-base md:text-lg whitespace-nowrap"
+          >
+            Find Events
+          </a>
 
-            <p
-              class="text-base md:text-lg mb-0 text-gray-100 max-w-2xl mx-auto"
-            ></p>
-          </div>
-
-          <!-- Action buttons -->
-          <div class="flex flex-wrap items-center gap-3 shrink-0">
-            <a
-              routerLink="/explore"
-              class="bg-white text-ink hover:bg-gray-100 font-bold py-3.5 px-6 md:px-8 rounded-xl shadow-md transition-all duration-300 text-base md:text-lg whitespace-nowrap"
-            >
-              Find Events
-            </a>
-
-            <a
-              routerLink="/events/organizer/dashboard"
-              class="bg-brand hover:bg-brand-dark text-white font-bold py-3.5 px-6 md:px-8 rounded-xl shadow-md transition-all duration-300 text-base md:text-lg whitespace-nowrap"
-            >
-              Host Event
-            </a>
-          </div>
+          <a
+            routerLink="/events/organizer/dashboard"
+            class="bg-brand hover:bg-brand-dark text-white font-bold py-3.5 px-6 md:px-8 rounded-xl shadow-md transition-all duration-300 text-base md:text-lg whitespace-nowrap"
+          >
+            Host Event
+          </a>
         </div>
       </div>
     </div>
-  </section>
-
+  </div>
+</section>
 
 
   <section class="">

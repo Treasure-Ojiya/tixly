@@ -151,7 +151,7 @@
               @for (group of attendees.controls; track $index; let i = $index) {
                 <div
                   [formGroup]="group"
-                  class="rounded-3xl border border-gray-200 bg-white p-5 sm:p-6"
+                  class="rounded-3xl  bg-white p-5 sm:p-6"
                 >
                   <div class="flex items-center justify-between gap-3">
                     <div class="flex min-w-0 items-center gap-3">
@@ -312,7 +312,7 @@
             [ngClass]="step() === 1 ? 'hidden lg:block' : 'block'"
           >
             <!-- Order summary -->
-            <div class="rounded-3xl border border-gray-200 bg-white p-5 sm:p-6">
+            <div class="rounded-3xl 0 bg-white p-5 sm:p-6">
               <div class="flex gap-4">
                 @if (e.image_url) {
                   <img
@@ -364,7 +364,7 @@
 
             <!-- Review (small screens, step 2) -->
             <div
-              class="rounded-3xl border border-gray-200 bg-white p-5 lg:hidden sm:p-6"
+              class="rounded-3xl  bg-white p-5 lg:hidden sm:p-6"
               [ngClass]="step() === 2 ? 'block' : 'hidden'"
             >
               <div class="flex items-center justify-between">
@@ -394,7 +394,7 @@
 
             <!-- Payment -->
             <div
-              class="rounded-3xl border border-gray-200 bg-white p-5 sm:p-6"
+              class="rounded-3xl  bg-white p-5 sm:p-6"
               [ngClass]="step() === 3 ? 'block' : 'hidden lg:block'"
             >
               <h2 class="font-bold text-ink">
@@ -477,7 +477,7 @@
 
         <!-- Step buttons (small screens only) -->
         <div
-class="fixed inset-x-0 bottom-[calc(4rem_+_env(safe-area-inset-bottom))] z-40 border-t border-gray-200 bg-white px-4 py-3 backdrop-blur lg:hidden"        >
+class="fixed inset-x-0 bottom-[calc(4rem_+_env(safe-area-inset-bottom))] z-40  bg-white px-4 py-3 backdrop-blur lg:hidden"        >
           @switch (step()) {
             @case (1) {
               <button

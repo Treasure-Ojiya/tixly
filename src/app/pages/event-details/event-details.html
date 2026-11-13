@@ -229,7 +229,7 @@
       class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 grid gap-10 lg:grid-cols-[1fr_380px] lg:items-start"
     >
       <div class="space-y-6 min-w-0">
-        <section class="bg-white rounded-3xl border border-gray-200 p-6 sm:p-8">
+        <section class="bg-white rounded-3xl  p-6 sm:p-8">
           <h2 class="text-xl font-bold text-ink">About this event</h2>
           <p class="mt-3 text-gray-600 leading-relaxed whitespace-pre-line">
             {{ e.description }}
@@ -237,7 +237,7 @@
         </section>
 
         <section class="grid gap-4 sm:grid-cols-2">
-          <div class="bg-white rounded-3xl border border-gray-200 p-6">
+          <div class="bg-white rounded-3xl  p-6">
             <p class="text-sm font-semibold text-gray-500">Date/Time</p>
             <p class="mt-2 text-lg font-bold text-ink">
               {{ e.event_date | date: "EEEE, d MMMM y" }}
@@ -251,7 +251,7 @@
             </p>
           </div>
 
-          <div class="bg-white rounded-3xl border border-gray-200 p-6">
+          <div class="bg-white rounded-3xl  p-6">
             <p class="text-sm font-semibold text-gray-500">Location</p>
             <p class="mt-2 text-lg font-bold text-ink">{{ e.location }}</p>
             <a
@@ -266,7 +266,7 @@
         </section>
 
         <section
-          class="bg-white rounded-3xl border border-gray-200 p-6 flex items-center gap-4"
+          class="bg-white rounded-3xl  p-6 flex items-center gap-4"
         >
           <div
             class="w-14 h-14 shrink-0 rounded-full bg-brand-soft text-brand flex items-center justify-center text-xl font-bold"
@@ -288,7 +288,7 @@
 
       <aside id="tickets" class="lg:sticky lg:top-24 scroll-mt-24">
         <div
-          class="relative bg-white rounded-3xl border border-gray-200 shadow-lg"
+          class="relative bg-white rounded-3xl  shadow-lg"
         >
           <div class="p-6">
             <div class="flex items-center justify-between">
@@ -354,7 +354,7 @@
                 <div class="mt-5 flex items-center justify-between">
                   <span class="text-sm font-semibold text-ink">Quantity</span>
                   <div
-                    class="inline-flex items-center rounded-full border border-gray-200"
+                    class="inline-flex items-center rounded-full "
                   >
                     <button
                       type="button"
@@ -452,7 +452,7 @@
     </div>
 
     <div
-class="lg:hidden fixed inset-x-0 bottom-[calc(4rem_+_env(safe-area-inset-bottom))] z-40 border-t border-gray-200 bg-white backdrop-blur px-4 py-3 flex items-center justify-between gap-4"    >
+class="lg:hidden fixed inset-x-0 bottom-[calc(4rem_+_env(safe-area-inset-bottom))] z-40  bg-white backdrop-blur px-4 py-3 flex items-center justify-between gap-4"    >
       <div class="min-w-0">
         <p class="text-xs text-gray-500">
           {{
