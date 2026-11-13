@@ -9,6 +9,7 @@ import {
   Router,
   NavigationEnd,
   RouterLink,
+  RouterLinkActive,
   ActivatedRoute,
 } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -19,13 +20,13 @@ import { SearchBar } from '../search-bar/search-bar';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, CommonModule, SearchBar],
+  imports: [RouterLink, RouterLinkActive, CommonModule, SearchBar],
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css'], // ✅ corrected "styleUrl" → "styleUrls"
 })
 export class Navbar implements OnInit {
   scrolled = false;
-  isHomePage = false;
+  isHomePage = true;
   menuOpen = false;
   isLoggedIn = false;
   showDropdown = false;
@@ -38,35 +39,53 @@ export class Navbar implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
   private host = inject(ElementRef<HTMLElement>);
 
-  ngOnInit() {
-    this.authService.isLoggedIn$.subscribe((loggedIn) => {
-      this.isLoggedIn = loggedIn;
+ngOnInit(): void {
+  this.authService.isLoggedIn$.subscribe((loggedIn) => {
+    this.isLoggedIn = loggedIn;
+  });
+
+  // Set the correct state immediately on page load.
+  this.updateRouteState();
+
+  this.router.events
+    .pipe(
+      filter(
+        (event): event is NavigationEnd => event instanceof NavigationEnd,
+      ),
+    )
+    .subscribe(() => {
+      this.updateRouteState();
     });
+}
 
-    this.router.events
-      .pipe(
-        filter(
-          (event): event is NavigationEnd => event instanceof NavigationEnd,
-        ),
-      )
-      .subscribe((event: NavigationEnd) => {
-        this.isHomePage =
-          event.urlAfterRedirects === '/' ||
-          event.urlAfterRedirects === '/home';
+private updateRouteState(): void {
+  const currentUrl = this.router.url.split(/[?#]/)[0].replace(/\/+$/, '') || '/';
 
-        const currentRoute = this.getDeepestChild(this.activatedRoute);
-        const hideLayout = currentRoute.snapshot.data['hideLayout'];
+  this.isHomePage = currentUrl === '/' || currentUrl === '/home';
 
-        this.showNavbar = !hideLayout;
-      });
+  let currentRoute = this.router.routerState.snapshot.root;
+
+  while (currentRoute.firstChild) {
+    currentRoute = currentRoute.firstChild;
   }
 
+  this.showNavbar = !currentRoute.data['hideLayout'];
+
+  // Only the homepage uses the scroll-based navbar styling.
+  this.scrolled = this.isHomePage && window.scrollY > 50;
+
+  this.closeMenu();
+}
+
+
+
   navLinks = [
-    { label: 'Home', path: '/home' },
-    { label: 'Explore', path: '/explore' },
-    // { label: 'Spaces', path: '/spaces' },
-    { label: 'Queue', path: '/queue' },
-  ];
+  { label: 'Home', path: '/home', icon: 'home' },
+  { label: 'Explore', path: '/explore', icon: 'explore' },
+      // { label: 'Spaces', path: '/spaces' },
+
+  { label: 'Queue', path: '/queue', icon: 'ticket' },
+];
 
   createMenuItems = [
     {
@@ -75,12 +94,12 @@ export class Navbar implements OnInit {
       title: 'Host an Event',
       subtitle: 'Create and sell tickets',
     },
-    {
-      path: '/listings/provider',
-      icon: 'fa-building',
-      title: 'List a Space',
-      subtitle: 'Rent out your venue',
-    },
+    // {
+    //   path: '/listings/provider',
+    //   icon: 'fa-building',
+    //   title: 'List a Space',
+    //   subtitle: 'Rent out your venue',
+    // },
   ];
 
   // ✅ Helper to find deepest child route (important for nested routing)
@@ -89,13 +108,11 @@ export class Navbar implements OnInit {
     return route;
   }
 
-  // ✅ Add navbar shadow on scroll
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    this.scrolled = window.scrollY > 80;
+    this.scrolled = window.scrollY > 50;
   }
 
-  // ✅ Navigation actions
   goToAuth() {
     this.router.navigate(['auth/authentication']);
   }

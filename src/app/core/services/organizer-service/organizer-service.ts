@@ -15,7 +15,7 @@ import {
   EventCheckInRequest,
   EventCheckInResponse,
   UpdateToFeaturedRequest,
-  PayForFeatured,
+  FeaturePaymentResponse,
 } from '../../../app-model/model';
 
 @Injectable({
@@ -87,12 +87,13 @@ export class OrganizerService {
     );
   }
 
-  payForEvent(eventId: string, paymentData: PayForFeatured): Observable<any> {
-    return this.http.post<any>(
+  payForEvent(eventId: string): Observable<FeaturePaymentResponse> {
+    return this.http.post<FeaturePaymentResponse>(
       `${this.baseUrl}/events/${eventId}/feature/pay`,
-      paymentData,
+      {},
     );
   }
+
   ////////////////////////////////////////manage events
 
   // POST /events/{event_id}/publish: publish a draft event public.

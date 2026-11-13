@@ -4,6 +4,7 @@
       <div
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 mb-10 text-center md:text-left"
       >
+        <!-- Logo and Description -->
         <div class="mx-auto md:mx-0 w-[80%]">
           <img
             src="assets/tixly-logo.png"
@@ -12,88 +13,52 @@
             height="150"
             class="mx-auto md:mx-0 mb-4"
           />
+
           <p class="text-white italic font-semibold leading-relaxed">
             Join us to create exhilarating memories, stories, and experiences
             that will excite you!
           </p>
         </div>
 
-        <div>
-          <h5 class="text-white font-bold mb-3 uppercase tracking-wide">
-            Events
-          </h5>
-          <div class="flex flex-col gap-2 items-center md:items-start">
-            <a
-              routerLink="events/event-list"
-              class="text-white font-semibold decoration-none hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-              >Find Events</a
-            >
-            <a
-              routerLink="events/organizer/create-event"
-              class="text-white font-semibold decoration-none hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-              >Create Event</a
-            >
-            <a
-              routerLink="/queue"
-              class="text-white font-semibold decoration-none hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-              >Your Queue</a
-            >
-            <a
-              routerLink="/listings/provider/list-space"
-              class="text-white font-semibold decoration-none hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-              >List Space</a
-            >
-          </div>
-        </div>
+        <!-- Navigation Sections -->
+        @for (section of footerSections; track section.title) {
+          <div>
+            <h5 class="text-white font-bold mb-3 uppercase tracking-wide">
+              {{ section.title }}
+            </h5>
 
-        <div>
-          <h5 class="text-white font-bold mb-3 uppercase tracking-wide">
-            Organization
-          </h5>
-          <div class="flex flex-col gap-2 items-center md:items-start">
-            <a
-              href="#"
-              (click)="onScroll('serve', $event)"
-              class="text-white font-semibold decoration-none hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-              >Our Services</a
-            >
-            <a
-              routerLink="/about"
-              class="text-white font-semibold decoration-none hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-              >About</a
-            >
-            <a
-              routerLink="/contact"
-              class="text-white font-semibold decoration-none hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-              >Contact</a
-            >
+            <div class="flex flex-col gap-2 items-center md:items-start">
+              @for (link of section.links; track link.label) {
+                @if (link.route) {
+                  <a
+                    [routerLink]="link.route"
+                    class="text-white font-semibold decoration-none hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
+                  >
+                    {{ link.label }}
+                  </a>
+                } @else if (link.sectionId) {
+                  <a
+                    href="#"
+                    (click)="onScroll(link.sectionId, $event)"
+                    class="text-white font-semibold decoration-none hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
+                  >
+                    {{ link.label }}
+                  </a>
+                } @else {
+                  <a
+                    [href]="link.href"
+                    class="text-white font-semibold decoration-none hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
+                  >
+                    {{ link.label }}
+                  </a>
+                }
+              }
+            </div>
           </div>
-        </div>
-
-        <div>
-          <h5 class="text-white font-bold mb-3 uppercase tracking-wide">
-            Follow Us
-          </h5>
-          <div class="flex flex-col gap-2 items-center md:items-start">
-            <a
-              href="#"
-              class="text-white font-semibold decoration-none hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-              >Facebook</a
-            >
-            <a
-              href="#"
-              class="text-white font-semibold decoration-none hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-              >Twitter</a
-            >
-            <a
-              href="#"
-              class="text-white font-semibold decoration-none hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300"
-              >Instagram</a
-            >
-          </div>
-        </div>
+        }
       </div>
 
+      <!-- Copyright -->
       <div class="border-t border-white pt-6">
         <p class="text-center text-white font-semibold text-sm md:text-base">
           &copy; {{ currentYear }} Tixly. All rights reserved.

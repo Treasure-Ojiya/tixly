@@ -18,13 +18,9 @@ import { ViewSpaces } from '../../shared/components/view-spaces/view-spaces';
     Serve,
     // Creators,
     Recommended,
-    ViewSpaces,
+    // ViewSpaces,
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home {
-  backgroundImage = 'assets/hero-1-1.jpg';
-  // backgroundSize = 'cover';
-  // backgroundPosition = 'center';
-}
+export class Home {}

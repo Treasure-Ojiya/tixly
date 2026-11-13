@@ -1,184 +1,35 @@
-@if (showNavbar) {
+
+<!-- Top Navbar -->
+<div
+  class="fixed top-0 w-full z-50 transition-all duration-500 ease-in-out"
+  [ngClass]="{
+    'bg-nav shadow-md': !isHomePage || scrolled,
+    'bg-transparent': isHomePage && !scrolled
+  }"
+>
   <div
-    class="fixed w-full z-50 bg-nav transition-all duration-500 ease-in-out"
-    [ngClass]="{ 'shadow-md': scrolled || !isHomePage }"
+    class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between"
   >
-    <div
-      class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between"
-    >
-      <!-- Logo -->
-      <a routerLink="/home" class="shrink-0">
-        <img
-          src="assets/logo/tixly-logo.png"
-          alt="Tixly-Logo"
-          class="block w-20 h-auto cursor-pointer"
-        />
-      </a>
+    <!-- Logo -->
+    <a routerLink="/home" class="shrink-0">
+      <img
+        src="assets/logo/tixly-logo.png"
+        alt="Tixly-Logo"
+        class="block w-20 h-auto cursor-pointer"
+      />
+    </a>
 
-      <!-- Desktop Navigation -->
-      <nav class="navbar hidden md:flex md:items-center md:space-x-2 md:static">
-        <!-- Main links -->
-        @for (link of navLinks; track link.path) {
-          <a
-            [routerLink]="link.path"
-            class="block md:inline-block p-4 font-semibold text-white hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300 cursor-pointer"
-            (click)="closeMenu()"
-          >
-            {{ link.label }}
-          </a>
-        }
-
-        <!-- Create -->
-        <div class="relative">
-          <button
-            type="button"
-            (click)="toggleCreateMenu($event)"
-            class="w-full md:w-auto text-left md:text-center block md:inline-block p-4 font-semibold text-white hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300 cursor-pointer"
-          >
-            Create
-            <i
-              class="fas fa-chevron-down text-xs ml-1 transition-transform duration-300"
-              [ngClass]="{ 'rotate-180': createMenuOpen }"
-            ></i>
-          </button>
-
-          @if (createMenuOpen) {
-            <div
-              class="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg py-2 z-60 text-ink"
-              (click)="$event.stopPropagation()"
-            >
-              @for (item of createMenuItems; track item.path) {
-                <a
-                  [routerLink]="item.path"
-                  (click)="closeCreateMenu(); closeMenu()"
-                  class="flex items-center gap-3 px-4 py-3 hover:bg-brand-soft transition-colors cursor-pointer"
-                >
-                  <i class="fas w-5 text-brand" [ngClass]="item.icon"></i>
-
-                  <div>
-                    <p class="font-semibold">{{ item.title }}</p>
-                    <p class="text-xs text-gray-500">{{ item.subtitle }}</p>
-                  </div>
-                </a>
-              }
-            </div>
-          }
-        </div>
-      </nav>
-
-      <div class="flex items-center gap-1 md:gap-3">
-        <div class="relative">
-          <button
-            type="button"
-            aria-label="Search events"
-            [attr.aria-expanded]="searchOpen"
-            (click)="toggleSearch($event)"
-            class="flex h-10 w-10 items-center justify-center rounded-full text-white transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-accent cursor-pointer"
-            [ngClass]="{ 'bg-white/15': searchOpen }"
-          >
-            @if (searchOpen) {
-              <svg
-                viewBox="0 0 24 24"
-                class="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
-                aria-hidden="true"
-              >
-                <path d="M6 6l12 12M18 6L6 18" />
-              </svg>
-            } @else {
-              <svg
-                viewBox="0 0 24 24"
-                class="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
-                aria-hidden="true"
-              >
-                <circle cx="11" cy="11" r="7" />
-                <path d="M20 20l-3.5-3.5" />
-              </svg>
-            }
-          </button>
-
-          @if (searchOpen) {
-            <div
-              class="fixed inset-x-4 top-16 z-50 rounded-2xl bg-white p-3 shadow-xl md:absolute md:inset-x-auto md:right-0 md:top-full md:mt-2 md:w-96"
-              (click)="$event.stopPropagation()"
-            >
-              <app-search-bar (searched)="closeSearch()"></app-search-bar>
-            </div>
-          }
-        </div>
-
-        <div class="hidden md:flex items-center">
-          <div class="relative" (click)="toggleDropdown($event)">
-            <img
-              src="assets/icons/user.svg"
-              alt="Profile"
-              class="cursor-pointer w-6 h-auto"
-            />
-
-            @if (showDropdown) {
-              <div
-                class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-2 z-50 text-ink"
-                (click)="$event.stopPropagation()"
-              >
-                @if (!isLoggedIn) {
-                  <a
-                    (click)="goToAuth(); closeDropdown()"
-                    class="block px-4 py-2 hover:bg-brand-soft cursor-pointer"
-                  >
-                    Login / Register
-                  </a>
-                } @else {
-                  <button
-                    (click)="logout(); closeDropdown()"
-                    class="block w-full text-left px-4 py-2 hover:bg-brand-soft cursor-pointer"
-                  >
-                    Logout
-                  </button>
-
-                  <a
-                    routerLink="/profile"
-                    (click)="closeDropdown()"
-                    class="block px-4 py-2 hover:bg-brand-soft cursor-pointer"
-                  >
-                    Profile
-                  </a>
-                }
-              </div>
-            }
-          </div>
-        </div>
-
-        <!-- Hamburger (mobile) -->
-        <button
-          type="button"
-          aria-label="Menu"
-          class="flex h-10 w-10 items-center justify-center text-2xl text-white transition-all duration-300 focus:outline-none md:hidden cursor-pointer"
-          (click)="toggleMenu()"
-        >
-          <i class="fas" [ngClass]="menuOpen ? 'fa-times' : 'fa-bars'"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Mobile Navigation -->
+    <!-- Desktop Navigation -->
     <nav
-      class="md:hidden absolute top-full left-0 w-full bg-white overflow-hidden transition-all duration-500 ease-in-out"
+      class="navbar hidden md:flex md:items-center md:space-x-2 md:static rounded-full transition-all duration-500"
       [ngClass]="{
-        'opacity-0 max-h-0 pointer-events-none': !menuOpen,
-        'opacity-100 max-h-[700px] pointer-events-auto': menuOpen,
+        'bg-white/35 backdrop-blur-sm': isHomePage && !scrolled
       }"
     >
       @for (link of navLinks; track link.path) {
         <a
           [routerLink]="link.path"
-          class="block p-4 font-semibold text-ink hover:text-brand-dark transition-all duration-300 cursor-pointer"
+          class="block md:inline-block py-0.5 px-3 font-semibold text-white hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300 cursor-pointer"
           (click)="closeMenu()"
         >
           {{ link.label }}
@@ -186,11 +37,11 @@
       }
 
       <!-- Create -->
-      <div>
+      <div class="relative">
         <button
           type="button"
           (click)="toggleCreateMenu($event)"
-          class="w-full text-left p-4 font-semibold text-ink hover:text-brand-dark transition-all duration-300 cursor-pointer"
+          class="w-full md:w-auto text-left md:text-center block md:inline-block p-4 font-semibold text-white hover:underline hover:underline-offset-8 hover:decoration-2 transition-all duration-300 cursor-pointer"
         >
           Create
           <i
@@ -200,12 +51,15 @@
         </button>
 
         @if (createMenuOpen) {
-          <div class="bg-gray-50 text-ink" (click)="$event.stopPropagation()">
+          <div
+            class="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg py-2 z-60 text-ink"
+            (click)="$event.stopPropagation()"
+          >
             @for (item of createMenuItems; track item.path) {
               <a
                 [routerLink]="item.path"
                 (click)="closeCreateMenu(); closeMenu()"
-                class="flex items-center gap-3 px-6 py-3 hover:bg-brand-soft cursor-pointer"
+                class="flex items-center gap-3 px-4 py-3 hover:bg-brand-soft transition-colors cursor-pointer"
               >
                 <i class="fas w-5 text-brand" [ngClass]="item.icon"></i>
 
@@ -218,31 +72,245 @@
           </div>
         }
       </div>
-
-      @if (!isLoggedIn) {
-        <a
-          (click)="goToAuth(); closeMenu()"
-          class="block p-4 font-semibold text-ink hover:text-brand-dark cursor-pointer"
-        >
-          Login / Register
-        </a>
-      } @else {
-        <button
-          (click)="logout(); closeMenu()"
-          class="block w-full text-left p-4 font-semibold text-ink hover:text-brand-dark cursor-pointer"
-        >
-          Logout
-        </button>
-      }
-
-      <div>
-        <a
-          routerLink="/profile"
-          class="block p-4 font-semibold text-ink hover:text-brand-dark transition-all duration-300 cursor-pointer"
-          (click)="closeMenu()"
-          >Profile</a
-        >
-      </div>
     </nav>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-2">
+
+      <!-- Search: Desktop only -->
+      <div class="relative hidden md:block">
+        <button
+          type="button"
+          aria-label="Search events"
+          [attr.aria-expanded]="searchOpen"
+          (click)="toggleSearch($event)"
+          class="flex h-10 w-10 items-center justify-center rounded-lg text-white p-2 transition-all duration-500 focus-visible:outline-2 focus-visible:outline-accent cursor-pointer"
+          [ngClass]="{
+            'bg-white/35 backdrop-blur-sm': isHomePage && !scrolled,
+            'bg-white/35': searchOpen
+          }"
+        >
+          @if (searchOpen) {
+            <svg
+              viewBox="0 0 24 24"
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          } @else {
+            <svg
+              viewBox="0 0 24 24"
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="M20 20l-3.5-3.5" />
+            </svg>
+          }
+        </button>
+
+        @if (searchOpen) {
+          <div
+            class="fixed inset-x-4 top-16 z-50 rounded-2xl bg-white p-3 shadow-xl md:absolute md:inset-x-auto md:right-0 md:top-full md:mt-2 md:w-96"
+            (click)="$event.stopPropagation()"
+          >
+            <app-search-bar (searched)="closeSearch()"></app-search-bar>
+          </div>
+        }
+      </div>
+
+      <!-- Profile: Desktop and Mobile -->
+      <div
+        class="relative rounded-lg p-1.5 transition-all duration-500"
+        [ngClass]="{
+          'bg-white/35 backdrop-blur-sm': isHomePage && !scrolled
+        }"
+      >
+        <button
+          type="button"
+          aria-label="Open profile menu"
+          [attr.aria-expanded]="showDropdown"
+          (click)="toggleDropdown($event)"
+          class="flex items-center justify-center cursor-pointer"
+        >
+          <img
+            src="assets/icons/user.svg"
+            alt=""
+            class="w-7 h-auto"
+          />
+        </button>
+
+        @if (showDropdown) {
+          <div
+            class="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg py-2 z-50 text-ink"
+            (click)="$event.stopPropagation()"
+          >
+            @if (!isLoggedIn) {
+              <a
+                (click)="goToAuth(); closeDropdown()"
+                class="block px-4 py-2 hover:bg-brand-soft cursor-pointer"
+              >
+                Login / Register
+              </a>
+            } @else {
+              <a
+                routerLink="/profile"
+                (click)="closeDropdown()"
+                class="block px-4 py-2 hover:bg-brand-soft cursor-pointer"
+              >
+                Profile
+              </a>
+
+              <button
+                (click)="logout(); closeDropdown()"
+                class="block w-full text-left px-4 py-2 hover:bg-brand-soft cursor-pointer"
+              >
+                Logout
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
   </div>
-}
+</div>
+  <!-- Mobile Navigation -->
+<!-- Mobile Bottom Navigation -->
+<nav
+  class="fixed bottom-0 inset-x-0 z-50 md:hidden bg-nav shadow-[0_-4px_20px_rgba(0,0,0,0.12)] border-t border-white/10 pb-[env(safe-area-inset-bottom)]"
+>
+  <div class="relative flex items-center justify-around h-16 px-3">
+
+    @for (link of navLinks; track link.path) {
+      <a
+        [routerLink]="link.path"
+        routerLinkActive="text-[#fbd046]"
+        [routerLinkActiveOptions]="{ exact: true }"
+        [attr.aria-label]="link.label"
+        [title]="link.label"
+        class="flex flex-1 h-full flex-col items-center justify-center text-white/75 hover:text-white transition-colors duration-300"
+        (click)="closeCreateMenu()"
+      >
+        @switch (link.icon) {
+          @case ('home') {
+            <svg
+              viewBox="0 0 24 24"
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m3 10 9-7 9 7" />
+              <path d="M5 9v12h14V9" />
+              <path d="M9 21v-7h6v7" />
+            </svg>
+          }
+
+          @case ('explore') {
+            <svg
+              viewBox="0 0 24 24"
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z" />
+            </svg>
+          }
+
+          @case ('ticket') {
+            <svg
+              viewBox="0 0 24 24"
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path
+                d="M3 8a2 2 0 0 0 0 4v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 1 0-4V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2Z"
+              />
+              <path d="M13 5v2M13 11v2M13 17v2" />
+            </svg>
+          }
+        }
+      </a>
+    }
+
+    <!-- Create -->
+    <div class="relative flex flex-1 justify-center h-full">
+      <button
+        type="button"
+        aria-label="Create"
+        [attr.aria-expanded]="createMenuOpen"
+        (click)="toggleCreateMenu($event)"
+        class="flex flex-col items-center justify-center w-full h-full transition-colors duration-300"
+        [ngClass]="createMenuOpen ? 'text-[#fbd046]' : 'text-white/75'"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          class="w-6 h-6 transition-transform duration-300"
+          [ngClass]="{ 'rotate-45': createMenuOpen }"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+      </button>
+
+      @if (createMenuOpen) {
+        <div
+          class="absolute bottom-full right-0 mb-3 w-64 bg-white rounded-2xl shadow-xl py-2 text-ink overflow-hidden"
+          (click)="$event.stopPropagation()"
+        >
+          <div class="px-4 py-3 border-b border-gray-100">
+            <p class="font-bold text-sm">Create something</p>
+            <p class="text-xs text-gray-500">
+              Bring your next idea to life
+            </p>
+          </div>
+
+          @for (item of createMenuItems; track item.path) {
+            <a
+              [routerLink]="item.path"
+              (click)="closeCreateMenu()"
+              class="flex items-center gap-3 px-4 py-3 hover:bg-brand-soft transition-colors"
+            >
+              <div
+                class="w-10 h-10 rounded-xl bg-brand-soft flex items-center justify-center shrink-0"
+              >
+                <i class="fas text-brand" [ngClass]="item.icon"></i>
+              </div>
+
+              <div>
+                <p class="font-semibold text-sm">{{ item.title }}</p>
+                <p class="text-xs text-gray-500">{{ item.subtitle }}</p>
+              </div>
+            </a>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</nav>

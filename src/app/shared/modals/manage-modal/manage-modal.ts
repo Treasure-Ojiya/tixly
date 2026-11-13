@@ -130,6 +130,11 @@ export class ManageModal implements OnInit {
     duration: ['', Validators.required],
   });
 
+  // Feature Event
+  showFeatureConfirmation = signal(false);
+  isStartingFeaturePayment = signal(false);
+  featureError = signal('');
+
   ngOnInit(): void {
     this.load();
   }
@@ -532,5 +537,54 @@ export class ManageModal implements OnInit {
     const pad = (n: number) => String(n).padStart(2, '0');
 
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
+
+  openFeatureConfirmation(): void {
+    this.featureError.set('');
+    this.showFeatureConfirmation.set(true);
+  }
+
+  cancelFeatureConfirmation(): void {
+    this.showFeatureConfirmation.set(false);
+    this.featureError.set('');
+  }
+
+  confirmFeaturePayment(): void {
+    const event = this.event();
+
+    if (!event || event.featured || this.isStartingFeaturePayment()) {
+      return;
+    }
+
+    this.isStartingFeaturePayment.set(true);
+    this.featureError.set('');
+
+    this.organizerService.payForEvent(event.uuid).subscribe({
+      next: (response) => {
+        if (!response.authorization_url) {
+          this.isStartingFeaturePayment.set(false);
+          this.featureError.set(
+            'Payment could not be started. Please try again.',
+          );
+          return;
+        }
+
+        // Redirect the organizer to Paystack.
+        window.location.assign(response.authorization_url);
+      },
+
+      error: (error) => {
+        console.error('Feature payment failed:', error);
+
+        this.featureError.set(
+          this.errorText(
+            error,
+            'Could not initiate payment. Please try again.',
+          ),
+        );
+
+        this.isStartingFeaturePayment.set(false);
+      },
+    });
   }
 }

@@ -392,7 +392,7 @@ export interface UpdateToFeaturedRequest {
   featured: boolean;
 }
 
-export interface PayForFeatured {
+export interface FeaturePaymentResponse {
   event_id: string;
   authorization_url: string;
   reference: string;

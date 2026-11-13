@@ -1,7 +1,7 @@
-/* .hero-banner {
-  background-image: url("/assets/hero-1-1.jpg");
-  background-size: cover;
+.hero-banner {
+  background-image: url("/assets/hero-banner-2.png");
+  /* background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: 100vh;
-} */
+  min-height: 100vh; */
+}

@@ -68,9 +68,8 @@
           <div class="h-44 w-full bg-brand-soft"></div>
         }
 
-        <!-- Soft scrim so the badges stay readable on any image -->
         <div
-          class="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent"
+          class="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-black/40 to-transparent"
           aria-hidden="true"
         ></div>
 
@@ -896,6 +895,89 @@
                 </div>
               </div>
             }
+
+            <!-- Feature Event -->
+            <div class="rounded-2xl border border-gray-200 p-5">
+              <div class="flex items-start gap-4">
+                <span
+                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent/20 text-accent-dark"
+                  aria-hidden="true"
+                >
+                  <i class="fas fa-star"></i>
+                </span>
+
+                <div class="flex-1">
+                  <h3 class="font-semibold text-ink">Feature this event</h3>
+
+                  <p class="mt-1 text-sm leading-relaxed text-gray-500">
+                    Give your event additional visibility by featuring it on
+                    Tixly.
+                  </p>
+
+                  @if (e.featured) {
+                    <p class="mt-3 text-sm font-semibold text-success">
+                      This event is already featured.
+                    </p>
+                  } @else {
+                    <button
+                      type="button"
+                      (click)="openFeatureConfirmation()"
+                      class="mt-4 inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+                    >
+                      <i class="fas fa-star text-xs"></i>
+                      Feature event
+                    </button>
+                  }
+                </div>
+              </div>
+
+              @if (showFeatureConfirmation() && !e.featured) {
+                <div
+                  class="mt-5 rounded-xl border border-brand/20 bg-brand-soft p-4"
+                >
+                  <h4 class="font-semibold text-ink">
+                    Continue to feature this event?
+                  </h4>
+
+                  <p class="mt-2 text-sm leading-relaxed text-gray-600">
+                    You'll be redirected to Paystack to complete payment. Your
+                    event will be published and marked as featured automatically
+                    once payment is confirmed.
+                  </p>
+
+                  @if (featureError()) {
+                    <p class="mt-3 text-sm text-danger-dark" role="alert">
+                      {{ featureError() }}
+                    </p>
+                  }
+
+                  <div class="mt-4 flex flex-wrap justify-end gap-3">
+                    <button
+                      type="button"
+                      (click)="cancelFeatureConfirmation()"
+                      [disabled]="isStartingFeaturePayment()"
+                      class="rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      type="button"
+                      (click)="confirmFeaturePayment()"
+                      [disabled]="isStartingFeaturePayment()"
+                      class="rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      @if (isStartingFeaturePayment()) {
+                        Redirecting...
+                      } @else {
+                        Continue to payment
+                        <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                      }
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
 
             @if (editError()) {
               <p

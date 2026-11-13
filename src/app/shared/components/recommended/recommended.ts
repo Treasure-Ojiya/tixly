@@ -21,7 +21,7 @@ export class Recommended implements AfterViewInit {
     {
       id: 1,
       title: 'Lagos Music Festival',
-      image: 'assets/hero-2.jpg',
+      image: 'assets/logo/tixly-logo.svg',
       location: 'Lagos',
       date: 'Oct 12, 2026',
     },
