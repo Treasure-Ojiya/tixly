@@ -1,10 +1,9 @@
-
 <!-- Top Navbar -->
 <div
   class="fixed top-0 w-full z-50 transition-all duration-500 ease-in-out"
   [ngClass]="{
     'bg-nav shadow-md': !isHomePage || scrolled,
-    'bg-transparent': isHomePage && !scrolled
+    'bg-transparent': isHomePage && !scrolled,
   }"
 >
   <div
@@ -23,7 +22,7 @@
     <nav
       class="navbar hidden md:flex md:items-center md:space-x-2 md:static rounded-full transition-all duration-500"
       [ngClass]="{
-        'bg-white/35 backdrop-blur-sm': isHomePage && !scrolled
+        'bg-white/35 backdrop-blur-sm': isHomePage && !scrolled,
       }"
     >
       @for (link of navLinks; track link.path) {
@@ -76,7 +75,6 @@
 
     <!-- Right Actions -->
     <div class="flex items-center gap-2">
-
       <!-- Search: Desktop only -->
       <div class="relative hidden md:block">
         <button
@@ -87,7 +85,7 @@
           class="flex h-10 w-10 items-center justify-center rounded-lg text-white p-2 transition-all duration-500 focus-visible:outline-2 focus-visible:outline-accent cursor-pointer"
           [ngClass]="{
             'bg-white/35 backdrop-blur-sm': isHomePage && !scrolled,
-            'bg-white/35': searchOpen
+            'bg-white/35': searchOpen,
           }"
         >
           @if (searchOpen) {
@@ -132,7 +130,7 @@
       <div
         class="relative rounded-lg p-1.5 transition-all duration-500"
         [ngClass]="{
-          'bg-white/35 backdrop-blur-sm': isHomePage && !scrolled
+          'bg-white/35 backdrop-blur-sm': isHomePage && !scrolled,
         }"
       >
         <button
@@ -142,11 +140,7 @@
           (click)="toggleDropdown($event)"
           class="flex items-center justify-center cursor-pointer"
         >
-          <img
-            src="assets/icons/user.svg"
-            alt=""
-            class="w-7 h-auto"
-          />
+          <img src="assets/icons/user.svg" alt="" class="w-7 h-auto" />
         </button>
 
         @if (showDropdown) {
@@ -183,13 +177,12 @@
     </div>
   </div>
 </div>
-  <!-- Mobile Navigation -->
+<!-- Mobile Navigation -->
 <!-- Mobile Bottom Navigation -->
 <nav
-  class="fixed bottom-0 inset-x-0 z-50 md:hidden bg-nav shadow-[0_-4px_20px_rgba(0,0,0,0.12)]  pb-[env(safe-area-inset-bottom)]"
+  class="fixed bottom-0 inset-x-0 z-50 md:hidden bg-nav shadow-[0_-4px_20px_rgba(0,0,0,0.12)] pb-[env(safe-area-inset-bottom)]"
 >
   <div class="relative flex items-center justify-around h-16 px-3">
-
     @for (link of navLinks; track link.path) {
       <a
         [routerLink]="link.path"
@@ -201,7 +194,7 @@
         (click)="closeCreateMenu()"
       >
         @switch (link.icon) {
-          @case ('home') {
+          @case ("home") {
             <svg
               viewBox="0 0 24 24"
               class="w-6 h-6"
@@ -218,7 +211,7 @@
             </svg>
           }
 
-          @case ('explore') {
+          @case ("explore") {
             <svg
               viewBox="0 0 24 24"
               class="w-6 h-6"
@@ -234,7 +227,7 @@
             </svg>
           }
 
-          @case ('ticket') {
+          @case ("ticket") {
             <svg
               viewBox="0 0 24 24"
               class="w-6 h-6"
@@ -263,7 +256,7 @@
         [attr.aria-expanded]="createMenuOpen"
         (click)="toggleCreateMenu($event)"
         class="flex flex-col items-center justify-center w-full h-full transition-colors duration-300"
-        [ngClass]="createMenuOpen ? 'text-[#fbd046]' : 'text-white'"
+        [ngClass]="createMenuOpen ? 'text-accent' : 'text-white'"
       >
         <svg
           viewBox="0 0 24 24"
@@ -286,9 +279,7 @@
         >
           <div class="px-4 py-3 border-b border-gray-100">
             <p class="font-bold text-sm">Create something</p>
-            <p class="text-xs text-gray-500">
-              Bring your next idea to life
-            </p>
+            <p class="text-xs text-gray-500">Bring your next idea to life</p>
           </div>
 
           @for (item of createMenuItems; track item.path) {

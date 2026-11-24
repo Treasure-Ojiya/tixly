@@ -7,8 +7,6 @@ import {
 } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
-import { Navbar } from './shared/components/navbar/navbar';
-import { Footer } from './shared/components/footer/footer';
 import { ToastMessage } from './shared/components/toast-message/toast-message';
 
 @Component({

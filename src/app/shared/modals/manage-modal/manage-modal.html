@@ -213,10 +213,10 @@
               <div class="sm:col-span-2">
                 <dt class="text-xs font-semibold text-gray-500">Organizer</dt>
                 <dd class="mt-0.5 text-sm text-ink">
-                  {{ e.organizer.first_name }} {{ e.organizer.last_name }}
-                  @if (e.organizer.organization) {
+                  {{ e.organizer?.first_name }} {{ e.organizer?.last_name }}
+                  @if (e.organizer?.organization) {
                     <span class="text-gray-500"
-                      >, {{ e.organizer.organization }}</span
+                      >, {{ e.organizer?.organization }}</span
                     >
                   }
                 </dd>

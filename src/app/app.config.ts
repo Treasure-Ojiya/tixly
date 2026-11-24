@@ -8,7 +8,6 @@ import { authInterceptor } from './core/interceptor/auth-interceptor';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-// Iconify Angular module not installed; import removed to avoid compile error
 
 export const appConfig: ApplicationConfig = {
   providers: [

@@ -10,12 +10,13 @@ import { AuthService } from '../../core/services/auth-service/auth-service';
 import { UserService } from '../../core/services/user-service/user-service';
 // import { OrganizerService } from '../../core/services/organizer-service/organizer-service';
 import { ToastService } from '../../core/services/toast-service/toast-service';
+import { Recommended } from '../../shared/components/recommended/recommended';
 
 const MAX_PER_ORDER = 10;
 
 @Component({
   selector: 'app-event-details',
-  imports: [DatePipe, NgClass, RouterLink],
+  imports: [DatePipe, NgClass, RouterLink, Recommended],
   templateUrl: './event-details.html',
   styleUrl: './event-details.css',
 })
@@ -26,7 +27,6 @@ export class EventDetails {
   private cartService = inject(CartService);
   private authService = inject(AuthService);
   private userService = inject(UserService);
-  // private organizerService = inject(OrganizerService);
   private toastService = inject(ToastService);
 
   // =========================

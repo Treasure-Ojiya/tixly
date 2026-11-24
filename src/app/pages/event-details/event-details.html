@@ -1,4 +1,5 @@
-<div class="min-h-screen bg-surface pb-40 lg:pb-14">  @if (isLoading()) {
+<div class="min-h-screen bg-surface pb-40 lg:pb-14">
+  @if (isLoading()) {
     <div
       class="h-80 sm:h-96 bg-gray-200 animate-pulse"
       aria-hidden="true"
@@ -52,9 +53,9 @@
         </span>
       }
 
-<div
-  class="absolute inset-0 bg-linear-to-t from-ink via-ink/70 to-ink/10"
-></div>
+      <div
+        class="absolute inset-0 bg-linear-to-t from-ink via-ink/70 to-ink/10"
+      ></div>
 
       <div
         class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 sm:pb-14 min-h-80 sm:min-h-104 flex flex-col"
@@ -105,7 +106,6 @@
 
         <div class="mt-auto pt-24">
           <div class="flex flex-wrap items-center gap-2 mb-4">
-
             @if (e.featured) {
               <span
                 class="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-ink"
@@ -130,7 +130,8 @@
           </div>
 
           <h1
-class="max-w-3xl text-4xl sm:text-6xl font-bold leading-[1.05] tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.65)]"          >
+            class="max-w-3xl text-4xl sm:text-6xl font-bold leading-[1.05] tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.65)]"
+          >
             {{ e.title }}
           </h1>
 
@@ -222,7 +223,7 @@ class="max-w-3xl text-4xl sm:text-6xl font-bold leading-[1.05] tracking-tight te
       class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 grid gap-10 lg:grid-cols-[1fr_380px] lg:items-start"
     >
       <div class="space-y-6 min-w-0">
-        <section class="bg-white rounded-3xl  p-6 sm:p-8">
+        <section class="bg-white rounded-3xl p-6 sm:p-8">
           <h2 class="text-xl font-bold text-ink">About this event</h2>
           <p class="mt-3 text-gray-600 leading-relaxed whitespace-pre-line">
             {{ e.description }}
@@ -230,7 +231,7 @@ class="max-w-3xl text-4xl sm:text-6xl font-bold leading-[1.05] tracking-tight te
         </section>
 
         <section class="grid gap-4 sm:grid-cols-2">
-          <div class="bg-white rounded-3xl  p-6">
+          <div class="bg-white rounded-3xl p-6">
             <p class="text-sm font-semibold text-gray-500">Date/Time</p>
             <p class="mt-2 text-lg font-bold text-ink">
               {{ e.event_date | date: "EEEE, d MMMM y" }}
@@ -244,7 +245,7 @@ class="max-w-3xl text-4xl sm:text-6xl font-bold leading-[1.05] tracking-tight te
             </p>
           </div>
 
-          <div class="bg-white rounded-3xl  p-6">
+          <div class="bg-white rounded-3xl p-6">
             <p class="text-sm font-semibold text-gray-500">Location</p>
             <p class="mt-2 text-lg font-bold text-ink">{{ e.location }}</p>
             <a
@@ -258,9 +259,7 @@ class="max-w-3xl text-4xl sm:text-6xl font-bold leading-[1.05] tracking-tight te
           </div>
         </section>
 
-        <section
-          class="bg-white rounded-3xl  p-6 flex items-center gap-4"
-        >
+        <section class="bg-white rounded-3xl p-6 flex items-center gap-4">
           <div
             class="w-14 h-14 shrink-0 rounded-full bg-brand-soft text-brand flex items-center justify-center text-xl font-bold"
             aria-hidden="true"
@@ -270,9 +269,9 @@ class="max-w-3xl text-4xl sm:text-6xl font-bold leading-[1.05] tracking-tight te
           <div class="min-w-0">
             <p class="text-sm font-semibold text-gray-500">Hosted by</p>
             <p class="text-lg font-bold text-ink truncate">{{ e.host_name }}</p>
-            @if (e.organizer.organization) {
+            @if (e.organizer?.organization) {
               <p class="text-sm text-gray-500 truncate">
-                {{ e.organizer.organization }}
+                {{ e.organizer?.organization }}
               </p>
             }
           </div>
@@ -280,9 +279,7 @@ class="max-w-3xl text-4xl sm:text-6xl font-bold leading-[1.05] tracking-tight te
       </div>
 
       <aside id="tickets" class="lg:sticky lg:top-24 scroll-mt-24">
-        <div
-          class="relative bg-white rounded-3xl  shadow-lg"
-        >
+        <div class="relative bg-white rounded-3xl shadow-lg">
           <div class="p-6">
             <div class="flex items-center justify-between">
               <h2 class="text-xl font-bold text-ink">Tickets</h2>
@@ -346,9 +343,7 @@ class="max-w-3xl text-4xl sm:text-6xl font-bold leading-[1.05] tracking-tight te
               @if (selectedTicket()) {
                 <div class="mt-5 flex items-center justify-between">
                   <span class="text-sm font-semibold text-ink">Quantity</span>
-                  <div
-                    class="inline-flex items-center rounded-full "
-                  >
+                  <div class="inline-flex items-center rounded-full">
                     <button
                       type="button"
                       (click)="changeQuantity(-1)"
@@ -445,7 +440,8 @@ class="max-w-3xl text-4xl sm:text-6xl font-bold leading-[1.05] tracking-tight te
     </div>
 
     <div
-class="lg:hidden fixed inset-x-0 bottom-[calc(4rem_+_env(safe-area-inset-bottom))] z-40  bg-white backdrop-blur px-4 py-3 flex items-center justify-between gap-4"    >
+      class="lg:hidden fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-40 bg-white backdrop-blur px-4 py-3 flex items-center justify-between gap-4"
+    >
       <div class="min-w-0">
         <p class="text-xs text-gray-500">
           {{
@@ -473,4 +469,8 @@ class="lg:hidden fixed inset-x-0 bottom-[calc(4rem_+_env(safe-area-inset-bottom)
       </button>
     </div>
   }
+</div>
+
+<div>
+  <app-recommended></app-recommended>
 </div>

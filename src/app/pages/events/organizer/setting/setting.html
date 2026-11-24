@@ -1,116 +1,404 @@
-<section class="px-4 sm:px-6 lg:px-8 py-8">
-  <div class="mb-10 border-b border-gray-200 pb-2">
-    <h1 class="text-3xl md:text-4xl font-bold text-ink">Settings</h1>
-  </div>
-
-  <div class="space-y-8">
-    <!-- Profile Section -->
-    <div class="bg-white shadow-sm rounded-xl p-6">
-      <h3 class="text-lg font-semibold text-ink mb-4">Organizer Profile</h3>
-      <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label class="block text-gray-600 text-sm mb-1">Full Name</label>
-          <input
-            type="text"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand/30 focus:border-brand focus:outline-none"
-            placeholder="John Doe"
-          />
-        </div>
-        <div>
-          <label class="block text-gray-600 text-sm mb-1">Email</label>
-          <input
-            type="email"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand/30 focus:border-brand focus:outline-none"
-            placeholder="john@example.com"
-          />
-        </div>
-        <div>
-          <label class="block text-gray-600 text-sm mb-1">Phone</label>
-          <input
-            type="text"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand/30 focus:border-brand focus:outline-none"
-            placeholder="+234 800 000 0000"
-          />
-        </div>
-        <div>
-          <label class="block text-gray-600 text-sm mb-1">Organization</label>
-          <input
-            type="text"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand/30 focus:border-brand focus:outline-none"
-            placeholder="Tixly Inc."
-          />
-        </div>
-      </form>
-
-      <div class="text-right mt-6">
-        <button
-          class="bg-brand text-white px-5 py-2 rounded-lg font-medium hover:bg-brand-dark transition cursor-pointer"
-        >
-          Save Changes
-        </button>
-      </div>
+<section class="px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-4xl">
+    <!-- ═════════ Page header ═════════ -->
+    <div class="mb-8 border-b border-ink/10 pb-4">
+      <h1 class="text-3xl font-bold text-ink md:text-4xl">Settings</h1>
+      <p class="mt-1 text-sm text-ink/70">
+        Manage your profile, password and the bank account your earnings go to.
+      </p>
     </div>
 
-    <!-- Security Section -->
-    <div class="bg-white shadow-sm rounded-xl p-6">
-      <h3 class="text-lg font-semibold text-ink mb-4">Security</h3>
-      <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label class="block text-gray-600 text-sm mb-1"
-            >Current Password</label
+    @if (isLoading()) {
+      <div class="space-y-6" aria-hidden="true">
+        <div class="h-80 animate-pulse rounded-2xl bg-ink/10"></div>
+        <div class="h-64 animate-pulse rounded-2xl bg-ink/10"></div>
+        <div class="h-56 animate-pulse rounded-2xl bg-ink/10"></div>
+      </div>
+    } @else if (loadError()) {
+      <div
+        class="rounded-2xl border border-dashed border-ink/20 bg-white px-6 py-14 text-center"
+        role="alert"
+      >
+        <div
+          class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-danger/10 text-lg font-bold text-danger-dark"
+          aria-hidden="true"
+        >
+          !
+        </div>
+        <h2 class="mt-4 text-lg font-semibold text-ink">
+          Settings did not load
+        </h2>
+        <p class="mt-1 text-sm text-ink/70">{{ loadError() }}</p>
+        <button
+          type="button"
+          (click)="loadProfile()"
+          class="mt-5 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark cursor-pointer"
+        >
+          Try again
+        </button>
+      </div>
+    } @else if (profile(); as user) {
+      <div class="space-y-6">
+        <!-- ═════════ Profile ═════════ -->
+        <div class="rounded-2xl border border-ink/10 bg-white shadow-sm">
+          <div class="flex items-start gap-3 border-b border-ink/10 px-6 py-5">
+            <span
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand"
+              aria-hidden="true"
+            >
+              <i class="fas fa-user"></i>
+            </span>
+            <div class="flex-1">
+              <h2 class="text-lg font-semibold text-ink">Profile</h2>
+              <p class="mt-0.5 text-sm text-ink/70">
+                This is how you appear to attendees on your events.
+              </p>
+            </div>
+            <span
+              class="rounded bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand-dark"
+            >
+              {{ accountTypeLabel() }}
+            </span>
+          </div>
+
+          <form
+            [formGroup]="profileForm"
+            (ngSubmit)="saveProfile()"
+            class="p-6"
+            novalidate
           >
-          <input
-            type="password"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand/30 focus:border-brand focus:outline-none cursor-pointer"
-          />
-        </div>
-        <div>
-          <label class="block text-gray-600 text-sm mb-1">New Password</label>
-          <input
-            type="password"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand/30 focus:border-brand focus:outline-none cursor-pointer"
-          />
-        </div>
-      </form>
+            <div class="grid gap-5 md:grid-cols-2">
+              <div>
+                <label
+                  for="first_name"
+                  class="mb-1.5 block text-sm font-semibold text-ink"
+                  >First name</label
+                >
+                <input
+                  id="first_name"
+                  formControlName="first_name"
+                  type="text"
+                  autocomplete="given-name"
+                  class="w-full rounded-xl border border-ink/20 bg-white px-4 py-2.5 text-sm text-ink focus:outline-2 focus:outline-brand"
+                  [class.border-danger]="isInvalid('profile', 'first_name')"
+                />
+                @if (isInvalid("profile", "first_name")) {
+                  <p class="mt-1.5 text-sm text-danger-dark">
+                    First name is required.
+                  </p>
+                }
+              </div>
 
-      <div class="text-right mt-6">
-        <button
-          class="bg-brand text-white px-5 py-2 rounded-lg font-medium hover:bg-brand-dark transition cursor-pointer"
-        >
-          Update Password
-        </button>
+              <div>
+                <label
+                  for="last_name"
+                  class="mb-1.5 block text-sm font-semibold text-ink"
+                  >Last name</label
+                >
+                <input
+                  id="last_name"
+                  formControlName="last_name"
+                  type="text"
+                  autocomplete="family-name"
+                  class="w-full rounded-xl border border-ink/20 bg-white px-4 py-2.5 text-sm text-ink focus:outline-2 focus:outline-brand"
+                  [class.border-danger]="isInvalid('profile', 'last_name')"
+                />
+                @if (isInvalid("profile", "last_name")) {
+                  <p class="mt-1.5 text-sm text-danger-dark">
+                    Last name is required.
+                  </p>
+                }
+              </div>
+
+              <div>
+                <label
+                  for="email"
+                  class="mb-1.5 block text-sm font-semibold text-ink"
+                  >Email</label
+                >
+                <input
+                  id="email"
+                  type="email"
+                  [value]="user.email"
+                  disabled
+                  class="w-full cursor-not-allowed rounded-xl border border-ink/10 bg-ink/5 px-4 py-2.5 text-sm text-ink/70"
+                />
+                <p class="mt-1.5 text-xs text-ink/70">
+                  Your email can't be changed here.
+                </p>
+              </div>
+
+              <div>
+                <label
+                  for="phone"
+                  class="mb-1.5 block text-sm font-semibold text-ink"
+                  >Phone</label
+                >
+                <input
+                  id="phone"
+                  formControlName="phone"
+                  type="tel"
+                  autocomplete="tel"
+                  class="w-full rounded-xl border border-ink/20 bg-white px-4 py-2.5 text-sm text-ink focus:outline-2 focus:outline-brand"
+                  [class.border-danger]="isInvalid('profile', 'phone')"
+                />
+                @if (isInvalid("profile", "phone")) {
+                  <p class="mt-1.5 text-sm text-danger-dark">
+                    Enter a valid phone number.
+                  </p>
+                }
+              </div>
+
+              @if (isOrganization()) {
+                <div class="md:col-span-2">
+                  <label
+                    for="organization"
+                    class="mb-1.5 block text-sm font-semibold text-ink"
+                    >Organization name</label
+                  >
+                  <input
+                    id="organization"
+                    formControlName="organization"
+                    type="text"
+                    class="w-full rounded-xl border border-ink/20 bg-white px-4 py-2.5 text-sm text-ink focus:outline-2 focus:outline-brand"
+                    [class.border-danger]="isInvalid('profile', 'organization')"
+                  />
+                  @if (isInvalid("profile", "organization")) {
+                    <p class="mt-1.5 text-sm text-danger-dark">
+                      Please enter the organization name.
+                    </p>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="mt-6 flex justify-end border-t border-ink/10 pt-5">
+              <button
+                type="submit"
+                [disabled]="isSavingProfile() || profileForm.pristine"
+                class="rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {{ isSavingProfile() ? "Saving..." : "Save changes" }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- ═════════ Security ═════════ -->
+        <div class="rounded-2xl border border-ink/10 bg-white shadow-sm">
+          <div class="flex items-start gap-3 border-b border-ink/10 px-6 py-5">
+            <span
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand"
+              aria-hidden="true"
+            >
+              <i class="fas fa-lock"></i>
+            </span>
+            <div>
+              <h2 class="text-lg font-semibold text-ink">Security</h2>
+              <p class="mt-0.5 text-sm text-ink/70">
+                Choose a strong password you don't use anywhere else.
+              </p>
+            </div>
+          </div>
+
+          <form
+            [formGroup]="passwordForm"
+            (ngSubmit)="changePassword()"
+            class="p-6"
+            novalidate
+          >
+            <div class="grid gap-5 md:grid-cols-2">
+              <div class="md:col-span-2">
+                <label
+                  for="current_password"
+                  class="mb-1.5 block text-sm font-semibold text-ink"
+                  >Current password</label
+                >
+                <input
+                  id="current_password"
+                  formControlName="current_password"
+                  type="password"
+                  autocomplete="current-password"
+                  class="w-full rounded-xl border border-ink/20 bg-white px-4 py-2.5 text-sm text-ink focus:outline-2 focus:outline-brand md:max-w-sm"
+                  [class.border-danger]="
+                    isInvalid('password', 'current_password')
+                  "
+                />
+                @if (isInvalid("password", "current_password")) {
+                  <p class="mt-1.5 text-sm text-danger-dark">
+                    Enter your current password.
+                  </p>
+                }
+              </div>
+
+              <div>
+                <label
+                  for="new_password"
+                  class="mb-1.5 block text-sm font-semibold text-ink"
+                  >New password</label
+                >
+                <input
+                  id="new_password"
+                  formControlName="new_password"
+                  type="password"
+                  autocomplete="new-password"
+                  class="w-full rounded-xl border border-ink/20 bg-white px-4 py-2.5 text-sm text-ink focus:outline-2 focus:outline-brand"
+                  [class.border-danger]="isInvalid('password', 'new_password')"
+                />
+                @if (isInvalid("password", "new_password")) {
+                  <p class="mt-1.5 text-sm text-danger-dark">
+                    Use at least 8 characters.
+                  </p>
+                }
+              </div>
+
+              <div>
+                <label
+                  for="confirm_password"
+                  class="mb-1.5 block text-sm font-semibold text-ink"
+                  >Confirm new password</label
+                >
+                <input
+                  id="confirm_password"
+                  formControlName="confirm_password"
+                  type="password"
+                  autocomplete="new-password"
+                  class="w-full rounded-xl border border-ink/20 bg-white px-4 py-2.5 text-sm text-ink focus:outline-2 focus:outline-brand"
+                  [class.border-danger]="
+                    isInvalid('password', 'confirm_password') ||
+                    (passwordForm.hasError('mismatch') &&
+                      passwordForm.controls.confirm_password.touched)
+                  "
+                />
+                @if (
+                  passwordForm.hasError("mismatch") &&
+                  passwordForm.controls.confirm_password.touched
+                ) {
+                  <p class="mt-1.5 text-sm text-danger-dark">
+                    The passwords don't match.
+                  </p>
+                } @else if (isInvalid("password", "confirm_password")) {
+                  <p class="mt-1.5 text-sm text-danger-dark">
+                    Confirm your new password.
+                  </p>
+                }
+              </div>
+            </div>
+
+            <p class="mt-4 text-xs text-ink/70">Use at least 8 characters.</p>
+
+            <div class="mt-6 flex justify-end border-t border-ink/10 pt-5">
+              <button
+                type="submit"
+                [disabled]="isSavingPassword()"
+                class="rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {{ isSavingPassword() ? "Updating..." : "Update password" }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- ═════════ Bank account ═════════ -->
+        <div class="rounded-2xl border border-ink/10 bg-white shadow-sm">
+          <div class="flex items-start gap-3 border-b border-ink/10 px-6 py-5">
+            <span
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand"
+              aria-hidden="true"
+            >
+              <i class="fas fa-university"></i>
+            </span>
+            <div>
+              <h2 class="text-lg font-semibold text-ink">Bank account</h2>
+              <p class="mt-0.5 text-sm text-ink/70">
+                Where your share of ticket sales is paid.
+              </p>
+            </div>
+          </div>
+
+          <form
+            [formGroup]="bankForm"
+            (ngSubmit)="saveBank()"
+            class="p-6"
+            novalidate
+          >
+            <div
+              class="mb-5 flex items-start gap-3 rounded-xl border border-brand/20 bg-brand-soft px-4 py-3 text-sm text-ink/80"
+              role="note"
+            >
+              <i
+                class="fas fa-info-circle mt-0.5 text-brand"
+                aria-hidden="true"
+              ></i>
+              <p>
+                Ticket payments are split automatically at checkout, so there is
+                nothing to request. Just make sure these details are correct.
+              </p>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-2">
+              <div>
+                <label
+                  for="bank_name"
+                  class="mb-1.5 block text-sm font-semibold text-ink"
+                  >Bank name</label
+                >
+                <input
+                  id="bank_name"
+                  formControlName="bank_name"
+                  type="text"
+                  placeholder="e.g. GTBank"
+                  class="w-full rounded-xl border border-ink/20 bg-white px-4 py-2.5 text-sm text-ink placeholder:text-ink/40 focus:outline-2 focus:outline-brand"
+                  [class.border-danger]="isInvalid('bank', 'bank_name')"
+                />
+                @if (isInvalid("bank", "bank_name")) {
+                  <p class="mt-1.5 text-sm text-danger-dark">
+                    Bank name is required.
+                  </p>
+                }
+              </div>
+
+              <div>
+                <label
+                  for="bank_account_number"
+                  class="mb-1.5 block text-sm font-semibold text-ink"
+                  >Account number</label
+                >
+                <input
+                  id="bank_account_number"
+                  formControlName="bank_account_number"
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="10"
+                  autocomplete="off"
+                  placeholder="0123456789"
+                  class="w-full rounded-xl border border-ink/20 bg-white px-4 py-2.5 text-sm tabular-nums text-ink placeholder:text-ink/40 focus:outline-2 focus:outline-brand"
+                  [class.border-danger]="
+                    isInvalid('bank', 'bank_account_number')
+                  "
+                />
+                @if (isInvalid("bank", "bank_account_number")) {
+                  <p class="mt-1.5 text-sm text-danger-dark">
+                    Enter a 10-digit account number.
+                  </p>
+                } @else {
+                  <p class="mt-1.5 text-xs text-ink/70">10 digits.</p>
+                }
+              </div>
+            </div>
+
+            <div class="mt-6 flex justify-end border-t border-ink/10 pt-5">
+              <button
+                type="submit"
+                [disabled]="isSavingBank() || bankForm.pristine"
+                class="rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {{ isSavingBank() ? "Saving..." : "Save bank details" }}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
-
-    <!-- Payout Details -->
-    <div class="bg-white shadow-sm rounded-xl p-6">
-      <h3 class="text-lg font-semibold text-ink mb-4">Payout Information</h3>
-      <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label class="block text-gray-600 text-sm mb-1">Bank Name</label>
-          <input
-            type="text"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand/30 focus:border-brand focus:outline-none"
-            placeholder="GTBank"
-          />
-        </div>
-        <div>
-          <label class="block text-gray-600 text-sm mb-1">Account Number</label>
-          <input
-            type="text"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-brand/30 focus:border-brand focus:outline-none"
-            placeholder="0123456789"
-          />
-        </div>
-      </form>
-
-      <div class="text-right mt-6">
-        <button
-          class="bg-brand text-white px-5 py-2 rounded-lg font-medium hover:bg-brand-dark transition cursor-pointer"
-        >
-          Save Payout Info
-        </button>
-      </div>
-    </div>
+    }
   </div>
 </section>

@@ -4,6 +4,7 @@ import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
 import {
   CreateEventModel,
+  CreateEventResponse,
   EventModel,
   EventCategories,
   CreateCategory,
@@ -16,6 +17,11 @@ import {
   EventCheckInResponse,
   UpdateToFeaturedRequest,
   FeaturePaymentResponse,
+  UpdateUserModel,
+  UserModel,
+  UpdatePasswordRequest,
+  UpdateBankDetailsRequest,
+  UpdateBankDetailsResponse,
 } from '../../../app-model/model';
 
 @Injectable({
@@ -29,15 +35,17 @@ export class OrganizerService {
   createEvent(
     eventData: CreateEventModel,
     image: File,
-  ): Observable<EventModel> {
+  ): Observable<CreateEventResponse> {
     const formData = new FormData();
 
     formData.append('data', JSON.stringify(eventData));
     formData.append('image', image);
 
-    return this.http.post<EventModel>(`${this.baseUrl}/events/`, formData);
+    return this.http.post<CreateEventResponse>(
+      `${this.baseUrl}/events/`,
+      formData,
+    );
   }
-
   getMyEvents(): Observable<EventListItem[]> {
     return this.http.get<EventListItem[]>(`${this.baseUrl}/events/me`);
   }
@@ -138,6 +146,27 @@ export class OrganizerService {
     return this.http.post<EventCheckInResponse>(
       `${this.baseUrl}/events/${event_Id}/checkin`,
       checkInRequest,
+    );
+  }
+
+  getMyProfile(): Observable<UserModel> {
+    return this.http.get<UserModel>(`${this.baseUrl}/auth/me`);
+  }
+
+  updateMyProfile(changes: UpdateUserModel): Observable<UserModel> {
+    return this.http.patch<UserModel>(`${this.baseUrl}/auth/me`, changes);
+  }
+
+  updatePassword(request: UpdatePasswordRequest): Observable<unknown> {
+    return this.http.post<unknown>(`${this.baseUrl}/auth/me/password`, request);
+  }
+
+  updateBankDetails(
+    request: UpdateBankDetailsRequest,
+  ): Observable<UpdateBankDetailsResponse> {
+    return this.http.put<UpdateBankDetailsResponse>(
+      `${this.baseUrl}/auth/me/bank-details`,
+      request,
     );
   }
 }

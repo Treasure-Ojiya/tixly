@@ -204,7 +204,7 @@ export class Explore {
       search: this.query().trim(),
       category_id: this.categoryId(),
       event_type: this.price() === 'any' ? undefined : this.price(),
-      featured: this.featuredOnly(),
+      ...(this.featuredOnly() ? { featured: true } : {}),
     } as EventListFilters,
     nonce: this.retryNonce(),
   }));

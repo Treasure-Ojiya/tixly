@@ -223,6 +223,22 @@ export interface UpdateCartItemModel {
   attendees?: CartAttendee[];
 }
 
+//Recommended for users; based on prevously purchased category of ticket
+export interface UserRecommended {
+  uuid: string;
+  title: string;
+  description: string;
+  location: string;
+  event_date: string;
+  duration: string;
+  event_type: string;
+  status: string;
+  featured: boolean;
+  tickets_sold: number;
+  total_available: number;
+  image_url: string;
+}
+
 // =========================
 // Payment
 // =========================
@@ -295,6 +311,8 @@ export interface PayBookingModel {
 export interface CreateEventModel {
   title: string;
   host_name: string;
+  host_phone: string;
+  organization?: string;
   description: string;
   location: string;
   event_date: string;
@@ -333,6 +351,7 @@ export interface EventModel {
   uuid: string;
   title: string;
   host_name: string;
+  host_phone: string;
   description: string;
   location: string;
   event_date: string;
@@ -340,12 +359,19 @@ export interface EventModel {
   event_type: string;
   status: string;
   featured: boolean;
-  organizer: EventOrganizerModel;
+  organizer?: EventOrganizerModel;
   categories: EventCategories[];
   image_url: string | null;
   ticket_types: EventTicketTypeModel[];
   created_at: string;
   updated_at: string;
+}
+
+export interface CreateEventResponse {
+  event: EventModel;
+  requires_featured_payment: boolean;
+  featured_payment_url: string | null;
+  featured_payment_reference: string | null;
 }
 
 // Ticket type details for an event. Used as property(ticket_types) of EventModel and in the event list.

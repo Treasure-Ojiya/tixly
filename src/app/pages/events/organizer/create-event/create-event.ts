@@ -4,13 +4,13 @@ import {
   ChangeDetectorRef,
   inject,
   OnInit,
+  OnDestroy,
 } from '@angular/core';
 
 import { Router } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { map, of, switchMap, tap } from 'rxjs';
 
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 import {
   FormArray,
@@ -33,6 +33,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import {
   CreateEventModel,
+  CreateEventResponse,
   CreateTicketTypeModel,
   EventCategories,
   CreateCategory,
@@ -40,6 +41,8 @@ import {
 
 import { OrganizerService } from '../../../../core/services/organizer-service/organizer-service';
 import { ToastService } from '../../../../core/services/toast-service/toast-service';
+
+const MAX_IMAGE_MB = 5; // adjust to whatever your backend accepts
 
 @Component({
   selector: 'app-create-event',
@@ -62,7 +65,7 @@ import { ToastService } from '../../../../core/services/toast-service/toast-serv
 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreateEvent implements OnInit {
+export class CreateEvent implements OnInit, OnDestroy {
   private formBuilder = inject(FormBuilder);
   private eventService = inject(OrganizerService);
   private router = inject(Router);
@@ -80,9 +83,21 @@ export class CreateEvent implements OnInit {
   // Set once the event exists, so a failed publish can be retried without
   // creating a duplicate.
   private createdEventId: string | null = null;
+  // Set when the backend says featuring this event needs a payment first.
+  private featuredPaymentUrl: string | null = null;
   formError = '';
 
+  // =========================
+  // Cover image (with preview)
+  // =========================
+
+  readonly maxImageMb = MAX_IMAGE_MB;
+
   selectedImage: File | null = null;
+  imagePreviewUrl: string | null = null;
+  imageError = '';
+  isDraggingImage = false;
+
   selectedVideo: File | null = null;
 
   // =========================
@@ -108,6 +123,13 @@ export class CreateEvent implements OnInit {
 
     host_name: ['', Validators.required],
 
+    // Optional contact number for the event (backend field: host_phone)
+    host_phone: ['', Validators.pattern(/^\+?[0-9\s()-]{7,20}$/)],
+
+    // Optional organizer details: mirrors the account type used at sign-up.
+    hosting_as: ['individual' as 'individual' | 'organization'],
+    organization: [''],
+
     description: ['', Validators.required],
 
     location: ['', Validators.required],
@@ -121,6 +143,9 @@ export class CreateEvent implements OnInit {
     event_type: ['free', Validators.required],
 
     video_url: [''],
+
+    // Optional: feature the event (the backend may ask for a payment).
+    feature_event: [false],
 
     category_ids: this.formBuilder.control<string[]>([], {
       validators: Validators.required,
@@ -141,6 +166,26 @@ export class CreateEvent implements OnInit {
     this.loadCategories();
   }
 
+  ngOnDestroy(): void {
+    this.revokePreview();
+  }
+
+  // =========================
+  // Hosting as (optional organizer)
+  // =========================
+
+  get hostingAs(): 'individual' | 'organization' {
+    return this.eventForm.controls.hosting_as.value ?? 'individual';
+  }
+
+  setHostingAs(value: 'individual' | 'organization'): void {
+    this.eventForm.controls.hosting_as.setValue(value);
+
+    if (value === 'individual') {
+      this.eventForm.controls.organization.reset('');
+    }
+  }
+
   // =========================
   // Ticket Form
   // =========================
@@ -157,6 +202,14 @@ export class CreateEvent implements OnInit {
 
   get ticketTypes(): FormArray {
     return this.eventForm.get('ticket_types') as FormArray;
+  }
+
+  /** Sum of all ticket quantities, shown under the ticket list. */
+  totalCapacity(): number {
+    return this.ticketTypes.controls.reduce(
+      (sum, t) => sum + (Number(t.get('total_quantity')?.value) || 0),
+      0,
+    );
   }
 
   addTicket(): void {
@@ -277,14 +330,72 @@ export class CreateEvent implements OnInit {
   }
 
   // =========================
-  // Image
+  // Cover image
   // =========================
 
   onImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
 
     // Falls back to null so cancelling the picker clears the selection.
-    this.selectedImage = input.files?.[0] ?? null;
+    this.setImage(input.files?.[0] ?? null);
+  }
+
+  onImageDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDraggingImage = true;
+  }
+
+  onImageDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDraggingImage = false;
+  }
+
+  onImageDropped(event: DragEvent): void {
+    event.preventDefault();
+    this.isDraggingImage = false;
+    this.setImage(event.dataTransfer?.files?.[0] ?? null);
+  }
+
+  removeImage(input: HTMLInputElement): void {
+    input.value = ''; // lets the same file be chosen again
+    this.setImage(null);
+  }
+
+  formatSize(bytes: number): string {
+    return bytes < 1024 * 1024
+      ? `${Math.max(1, Math.round(bytes / 1024))} KB`
+      : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  private setImage(file: File | null): void {
+    this.imageError = '';
+
+    if (!file) {
+      this.revokePreview();
+      this.selectedImage = null;
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      this.imageError = 'Please choose an image file (PNG, JPG or WEBP).';
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_MB * 1024 * 1024) {
+      this.imageError = `That image is too large. The limit is ${MAX_IMAGE_MB} MB.`;
+      return;
+    }
+
+    this.revokePreview();
+    this.selectedImage = file;
+    this.imagePreviewUrl = URL.createObjectURL(file);
+  }
+
+  private revokePreview(): void {
+    if (this.imagePreviewUrl) {
+      URL.revokeObjectURL(this.imagePreviewUrl);
+      this.imagePreviewUrl = null;
+    }
   }
 
   // =========================
@@ -332,6 +443,10 @@ export class CreateEvent implements OnInit {
       return messages[controlName] ?? 'This field is required.';
     }
 
+    if (control.errors['pattern'] && controlName === 'host_phone') {
+      return 'Enter a valid phone number.';
+    }
+
     return 'Please enter a valid value.';
   }
 
@@ -357,7 +472,8 @@ export class CreateEvent implements OnInit {
     }
 
     if (!this.selectedImage) {
-      this.formError = 'Please upload an event image.';
+      this.imageError = 'Please upload an event image.';
+      this.scrollToImage();
       return;
     }
 
@@ -366,9 +482,18 @@ export class CreateEvent implements OnInit {
 
     const formValue = this.eventForm.getRawValue();
 
+    const hostPhone = formValue.host_phone?.trim();
+    const organization =
+      formValue.hosting_as === 'organization'
+        ? formValue.organization?.trim()
+        : '';
+
     const payload: CreateEventModel = {
       title: formValue.title!.trim(),
       host_name: formValue.host_name!.trim(),
+      host_phone: hostPhone ?? '',
+      // TODO: confirm the backend's key for the organizer / organization name.
+      ...(organization ? { organization } : {}),
       description: formValue.description!.trim(),
       location: formValue.location!.trim(),
       event_date: this.buildEventDate(
@@ -378,7 +503,7 @@ export class CreateEvent implements OnInit {
       duration: formValue.duration!.trim(),
       event_type: formValue.event_type as 'free' | 'paid',
       status: publish ? 'published' : 'draft',
-      featured: false,
+      featured: !!formValue.feature_event, // can also be done later from Manage Events
       category_ids: formValue.category_ids ?? [],
       ticket_types: formValue.ticket_types.map(
         (ticket): CreateTicketTypeModel => ({
@@ -389,11 +514,17 @@ export class CreateEvent implements OnInit {
       ),
     };
 
+    // The create call returns { event, requires_featured_payment, ... }.
     const event$ = this.createdEventId
       ? of(this.createdEventId)
       : this.eventService.createEvent(payload, this.selectedImage).pipe(
-          tap((created) => (this.createdEventId = created.uuid)),
-          map((created) => created.uuid),
+          tap((created: CreateEventResponse) => {
+            this.createdEventId = created.event.uuid;
+            this.featuredPaymentUrl = created.requires_featured_payment
+              ? created.featured_payment_url
+              : null;
+          }),
+          map((created: CreateEventResponse) => created.event.uuid),
         );
 
     event$
@@ -406,15 +537,27 @@ export class CreateEvent implements OnInit {
       )
       .subscribe({
         next: () => {
+          const paymentUrl = this.featuredPaymentUrl;
+
           this.isSubmitting = false;
           this.submitMode = null;
           this.createdEventId = null;
+          this.featuredPaymentUrl = null;
           this.cdr.markForCheck();
 
-          this.toastService.show(
-            publish ? 'Event published.' : 'Draft saved.',
-            'success',
-          );
+          const saved = publish ? 'Event published.' : 'Draft saved.';
+
+          // Featuring needs a payment: send the organizer to the payment page.
+          if (paymentUrl && paymentUrl.startsWith('https://')) {
+            this.toastService.show(
+              `${saved} Taking you to payment...`,
+              'success',
+            );
+            window.location.href = paymentUrl;
+            return;
+          }
+
+          this.toastService.show(saved, 'success');
           this.router.navigate(['/events/organizer/manage-events']);
         },
 
@@ -446,6 +589,7 @@ export class CreateEvent implements OnInit {
   private readonly fieldLabels: Record<string, string> = {
     title: 'Title',
     host_name: 'Host name',
+    host_phone: 'Host phone',
     description: 'Description',
     location: 'Location',
     event_date: 'Date',
@@ -475,6 +619,14 @@ export class CreateEvent implements OnInit {
 
       field?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       field?.focus({ preventScroll: true });
+    }, 0);
+  }
+
+  private scrollToImage(): void {
+    setTimeout(() => {
+      document
+        .getElementById('cover-image')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 0);
   }
 

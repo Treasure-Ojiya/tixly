@@ -10,6 +10,7 @@ import {
   UpdatePasswordRequest,
   UpdateBankDetailsRequest,
   UpdateBankDetailsResponse,
+  UserRecommended,
 } from '../../../app-model/model';
 import { environment } from '../../../../environments/environment';
 
@@ -23,6 +24,15 @@ export class UserService {
 
   getUser(): Observable<UserModel> {
     return this.http.get<UserModel>(`${this.baseUrl}/auth/me`);
+  }
+
+  getRecommended(limit = 20): Observable<UserRecommended[]> {
+    return this.http.get<UserRecommended[]>(
+      `${this.baseUrl}/events/recommended`,
+      {
+        params: { limit },
+      },
+    );
   }
 
   updateUserProfile(data: UpdateUserModel): Observable<UserModel> {
