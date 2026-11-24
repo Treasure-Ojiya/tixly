@@ -47,7 +47,7 @@ export class OrganizerLayout implements OnInit {
     //   link: 'orders/:id',
     //   icon: 'assets/icons/order-white.svg',
     // },
-    { label: 'Finance', link: 'finance', icon: 'assets/icons/finance.svg' },
+    // { label: 'Finance', link: 'finance', icon: 'assets/icons/finance.svg' },
     {
       label: 'Settings',
       link: 'setting',
