@@ -373,6 +373,14 @@ export const routes: Routes = [
           import('./pages/profile/profile').then((m) => m.Profile),
         canActivate: [authGuard],
       },
+      {
+        path: 'booking-details/:id',
+        loadComponent: () =>
+          import('./pages/booking-details/booking-details').then(
+            (m) => m.BookingDetails,
+          ),
+        canActivate: [authGuard],
+      },
     ],
   },
 

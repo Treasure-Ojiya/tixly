@@ -58,8 +58,8 @@ export class UserService {
     );
   }
 
-  getUserBookedOrder(orderId: string): Observable<UserOrderIdBookedTicket[]> {
-    return this.http.get<UserOrderIdBookedTicket[]>(
+  getUserBookedOrder(orderId: string): Observable<UserOrderIdBookedTicket> {
+    return this.http.get<UserOrderIdBookedTicket>(
       `${this.baseUrl}/bookings/${orderId}`,
     );
   }

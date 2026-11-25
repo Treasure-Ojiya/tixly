@@ -9,7 +9,7 @@ import {
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { catchError, map, of, switchMap } from 'rxjs';
-import { EventListItem } from '../../../app-model/model';
+import { EventListItem, EventModel } from '../../../app-model/model';
 import { ExploreService } from '../../../core/services/explore-service/explore-service';
 
 const MAX_SLIDES = 8;
@@ -26,6 +26,8 @@ export class FeatureCard {
 
   events = signal<EventListItem[]>([]);
   isLoading = signal(true);
+
+  startingPrices = signal<Record<string, number>>({});
 
   // True when there are featured events, false when we fall back to the
   // next upcoming events so the home page is never empty.
@@ -45,6 +47,22 @@ export class FeatureCard {
 
   constructor() {
     this.loadEvents();
+  }
+
+  private cheapestTicket(event: EventModel): number | null {
+    const available = event.ticket_types.filter(
+      (t) => t.available_quantity > 0,
+    );
+    const pool = available.length ? available : event.ticket_types;
+    return pool.length ? Math.min(...pool.map((t) => t.price)) : null;
+  }
+
+  priceFor(event: EventListItem): number | null {
+    return event.starting_price ?? this.startingPrices()[event.uuid] ?? null;
+  }
+
+  formatPrice(amount: number): string {
+    return `₦${amount.toLocaleString('en-NG')}`;
   }
 
   private loadEvents(): void {

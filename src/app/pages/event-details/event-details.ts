@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe, NgClass } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { filter, switchMap } from 'rxjs';
+import { filter, switchMap, catchError, of } from 'rxjs';
 import { EventModel, EventTicketTypeModel } from '../../app-model/model';
 import { ExploreService } from '../../core/services/explore-service/explore-service';
 import { CartService } from '../../core/services/cart-service/cart-service';
@@ -42,6 +42,7 @@ export class EventDetails {
 
   // True while the event is being saved to queue.
   isQueueing = signal(false);
+  queuedEventIds = signal<string[]>([]);
   linkCopied = signal(false);
 
   isLoggedIn = toSignal(this.authService.isLoggedIn$, { initialValue: false });
@@ -72,6 +73,8 @@ export class EventDetails {
         error: (error) =>
           console.error('Could not load the current user:', error),
       });
+
+    this.loadMyQueue();
   }
 
   // =========================
@@ -125,6 +128,10 @@ export class EventDetails {
       // !this.isQueueing() &&
       !!this.selectedTicket() &&
       (this.selectedTicket()?.available_quantity ?? 0) > 0,
+  );
+
+  isQueued = computed(
+    () => !!this.event() && this.queuedEventIds().includes(this.event()!.uuid),
   );
 
   ctaLabel = computed(() => {
@@ -244,10 +251,9 @@ export class EventDetails {
     }
     const event = this.event();
     const ticket = this.selectedTicket();
-    if (!event || !ticket || !this.canBook()) return;
+    if (!event || !ticket || !this.canBook() || this.isQueued()) return;
 
     this.isQueueing.set(true);
-
     this.cartService
       .addToCart({
         event_id: event.uuid,
@@ -257,54 +263,26 @@ export class EventDetails {
       .subscribe({
         next: () => {
           this.isQueueing.set(false);
-          this.toastService.show(
-            'Added to your queue. You can pay for it any time.',
-            'success',
-            4000,
-          );
+          this.queuedEventIds.update((ids) => [...ids, event.uuid]);
+          this.toastService.show('Added to your queue...', 'success', 4000);
         },
-        error: (error) => {
-          console.error('Queue failed:', error);
-          this.isQueueing.set(false);
-          this.toastService.show(
-            typeof error?.error?.detail === 'string'
-              ? error.error.detail
-              : 'We could not add this to your queue. Please try again.',
-            'error',
-            5000,
-          );
-        },
+        // error unchanged
       });
   }
-  // =========================
-  // Organizer tools
-  // =========================
 
-  // publish(): void {
-  //   const event = this.event();
-
-  //   if (!event) {
-  //     return;
-  //   }
-
-  //   this.isPublishing.set(true);
-  //   this.ownerError.set('');
-
-  //   this.organizerService.publishEvent(event.uuid).subscribe({
-  //     next: (updated) => {
-  //       this.event.set(updated);
-  //       this.isPublishing.set(false);
-  //     },
-  //     error: (error) => {
-  //       console.error('Publish failed:', error);
-  //       this.ownerError.set(
-  //         error?.error?.message ??
-  //           'Could not publish this event. Please try again.',
-  //       );
-  //       this.isPublishing.set(false);
-  //     },
-  //   });
-  // }
+  private loadMyQueue(): void {
+    this.authService.isLoggedIn$
+      .pipe(
+        filter((loggedIn) => loggedIn),
+        switchMap(() =>
+          this.cartService.getCart().pipe(catchError(() => of([]))),
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((items) => {
+        this.queuedEventIds.set(items.map((i) => i.event.uuid));
+      });
+  }
 
   statusLabel(status: string): string {
     return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();

@@ -39,53 +39,52 @@ export class Navbar implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
   private host = inject(ElementRef<HTMLElement>);
 
-ngOnInit(): void {
-  this.authService.isLoggedIn$.subscribe((loggedIn) => {
-    this.isLoggedIn = loggedIn;
-  });
-
-  // Set the correct state immediately on page load.
-  this.updateRouteState();
-
-  this.router.events
-    .pipe(
-      filter(
-        (event): event is NavigationEnd => event instanceof NavigationEnd,
-      ),
-    )
-    .subscribe(() => {
-      this.updateRouteState();
+  ngOnInit(): void {
+    this.authService.isLoggedIn$.subscribe((loggedIn) => {
+      this.isLoggedIn = loggedIn;
     });
-}
 
-private updateRouteState(): void {
-  const currentUrl = this.router.url.split(/[?#]/)[0].replace(/\/+$/, '') || '/';
+    // Set the correct state immediately on page load.
+    this.updateRouteState();
 
-  this.isHomePage = currentUrl === '/' || currentUrl === '/home';
-
-  let currentRoute = this.router.routerState.snapshot.root;
-
-  while (currentRoute.firstChild) {
-    currentRoute = currentRoute.firstChild;
+    this.router.events
+      .pipe(
+        filter(
+          (event): event is NavigationEnd => event instanceof NavigationEnd,
+        ),
+      )
+      .subscribe(() => {
+        this.updateRouteState();
+      });
   }
 
-  this.showNavbar = !currentRoute.data['hideLayout'];
+  private updateRouteState(): void {
+    const currentUrl =
+      this.router.url.split(/[?#]/)[0].replace(/\/+$/, '') || '/';
 
-  // Only the homepage uses the scroll-based navbar styling.
-  this.scrolled = this.isHomePage && window.scrollY > 50;
+    this.isHomePage = currentUrl === '/' || currentUrl === '/home';
 
-  this.closeMenu();
-}
+    let currentRoute = this.router.routerState.snapshot.root;
 
+    while (currentRoute.firstChild) {
+      currentRoute = currentRoute.firstChild;
+    }
 
+    this.showNavbar = !currentRoute.data['hideLayout'];
+
+    // Only the homepage uses the scroll-based navbar styling.
+    this.scrolled = this.isHomePage && window.scrollY > 50;
+
+    this.closeMenu();
+  }
 
   navLinks = [
-  { label: 'Home', path: '/home', icon: 'home' },
-  { label: 'Explore', path: '/explore', icon: 'explore' },
-      // { label: 'Spaces', path: '/spaces' },
+    { label: 'Home', path: '/home', icon: 'home' },
+    { label: 'Explore', path: '/explore', icon: 'explore' },
+    // { label: 'Spaces', path: '/spaces' },
 
-  { label: 'Queue', path: '/queue', icon: 'ticket' },
-];
+    { label: 'Queue', path: '/queue', icon: 'ticket' },
+  ];
 
   createMenuItems = [
     {
@@ -93,6 +92,12 @@ private updateRouteState(): void {
       icon: 'fa-ticket-alt',
       title: 'Host an Event',
       subtitle: 'Create and sell tickets',
+    },
+    {
+      path: '/events/organizer/manage-events',
+      icon: 'fa-calendar-alt',
+      title: 'Manage Events',
+      subtitle: 'Manage your events',
     },
     // {
     //   path: '/listings/provider',

@@ -11,7 +11,11 @@ import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
 
-import { UserRecommended } from '../../../app-model/model';
+import {
+  UserRecommended,
+  EventListItem,
+  EventModel,
+} from '../../../app-model/model';
 import { UserService } from '../../../core/services/user-service/user-service';
 
 const MAX_SLIDES = 8;
@@ -28,6 +32,8 @@ export class Recommended {
 
   recommended = signal<UserRecommended[]>([]);
   isLoading = signal(true);
+
+  startingPrices = signal<Record<string, number>>({});
 
   private swiperStarted = false;
 
@@ -48,6 +54,22 @@ export class Recommended {
         this.recommended.set(events.slice(0, MAX_SLIDES));
         this.isLoading.set(false);
       });
+  }
+
+  private cheapestTicket(event: EventModel): number | null {
+    const available = event.ticket_types.filter(
+      (t) => t.available_quantity > 0,
+    );
+    const pool = available.length ? available : event.ticket_types;
+    return pool.length ? Math.min(...pool.map((t) => t.price)) : null;
+  }
+
+  priceFor(event: EventListItem): number | null {
+    return event.starting_price ?? this.startingPrices()[event.uuid] ?? null;
+  }
+
+  formatPrice(amount: number): string {
+    return `₦${amount.toLocaleString('en-NG')}`;
   }
 
   @ViewChild('swiper')

@@ -1,114 +1,146 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { DatePipe } from '../../shared/pipes/date-pipe';
 import { UserService } from '../../core/services/user-service/user-service';
-import { CartService } from '../../core/services/cart-service/cart-service';
-import {
-  CartItem,
-  UserBookedTicketResponse,
-  UserModel,
-} from '../../app-model/model';
+import { UserBookedTicketResponse, UserModel } from '../../app-model/model';
 import { ProfileModal } from '../../shared/modals/profile-modal/profile-modal';
 
-type ProfileTab = 'overview' | 'queue' | 'bookings' | 'following';
+/** What the template shows for one booking. */
+interface BookingView {
+  raw: UserBookedTicketResponse;
+  title: string;
+  location: string;
+  date: string;
+  image: string | null;
+  quantity: number;
+  total: number;
+  isFree: boolean;
+  status: string;
+  isPast: boolean;
+}
+
+interface StatusOption {
+  id: string; // 'all' or a lowercase status
+  label: string;
+  count: number;
+}
 
 @Component({
   selector: 'app-profile',
-  imports: [DatePipe, NgClass, NgTemplateOutlet, RouterLink],
+  imports: [DatePipe, RouterLink],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
 export class Profile implements OnInit {
   private userService = inject(UserService);
-  private cartService = inject(CartService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
 
-  firstName = '';
-  lastName = '';
-  email = '';
-  phone = '';
-  createdAt = '';
   location = 'Lagos, Nigeria';
 
   // =========================
-  // Tabs
+  // State
   // =========================
-  activeTab: ProfileTab = 'overview';
-
-  tabs: { id: ProfileTab; label: string }[] = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'queue', label: 'Queue' },
-    { id: 'bookings', label: 'Bookings' },
-  ];
-
-  get activeTabLabel(): string {
-    return this.tabs.find((tab) => tab.id === this.activeTab)?.label ?? '';
-  }
-
-  // =========================
-  // Placeholder stats (still fine)
-  // =========================
-  stats = [
-    { value: 12, label: 'Events attended' },
-    { value: 8, label: 'Saved' },
-    { value: 14, label: 'Following' },
-  ];
-
   user = signal<UserModel | null>(null);
-  queue = signal<CartItem[]>([]);
+  userError = signal('');
+
   bookings = signal<UserBookedTicketResponse[]>([]);
-  queueLoading = signal(true);
-  queueError = signal('');
   bookingsLoading = signal(true);
   bookingsError = signal('');
 
-  // First few upcoming cart items for the Overview tab.
-  upcomingQueue = computed(() => {
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
+  statusFilter = signal('all');
 
-    return this.queue()
-      .filter((i) => new Date(i.event.event_date) >= startOfToday)
-      .sort((a, b) => a.event.event_date.localeCompare(b.event.event_date))
-      .slice(0, 4);
+  // One pill per status found in the bookings, each with a count.
+  statusOptions = computed<StatusOption[]>(() => {
+    const list = this.bookings();
+    const counts = new Map<string, number>();
+    for (const b of list) {
+      const key = (b.status ?? '').toLowerCase();
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+    return [
+      { id: 'all', label: 'All', count: list.length },
+      ...[...counts.entries()]
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([id, count]) => ({ id, label: this.statusLabel(id), count })),
+    ];
   });
 
-  // Every cart item, soonest first, for the Queue tab.
-  allQueue = computed(() =>
-    [...this.queue()].sort((a, b) =>
-      a.event.event_date.localeCompare(b.event.event_date),
-    ),
-  );
+  // Upcoming events first (soonest on top), then past ones (most recent on top).
+  bookingList = computed<BookingView[]>(() => {
+    const status = this.statusFilter();
+    const views = this.bookings()
+      .filter(
+        (b) => status === 'all' || (b.status ?? '').toLowerCase() === status,
+      )
+      .map((b) => this.toView(b));
+    const time = (v: BookingView) => new Date(v.date).getTime() || 0;
+
+    const upcoming = views
+      .filter((v) => !v.isPast)
+      .sort((a, b) => time(a) - time(b));
+    const past = views
+      .filter((v) => v.isPast)
+      .sort((a, b) => time(b) - time(a));
+
+    return [...upcoming, ...past];
+  });
 
   // =========================
   // Lifecycle
   // =========================
   ngOnInit(): void {
     this.userDetails();
-    this.loadQueue();
     this.loadBookings();
   }
 
-  loadQueue(): void {
-    this.queueLoading.set(true);
-    this.queueError.set('');
+  // =========================
+  // User
+  // =========================
+  userDetails(): void {
+    this.userError.set('');
 
-    this.cartService.getCart().subscribe({
-      next: (items) => {
-        this.queue.set(items);
-        this.queueLoading.set(false);
-      },
+    this.userService.getUser().subscribe({
+      next: (user) => this.user.set(user),
       error: (error) => {
-        console.error('Failed to load queue:', error);
-        this.queueError.set('We could not load your queue.');
-        this.queueLoading.set(false);
+        console.error('Error fetching user details:', error);
+        this.userError.set('We could not load your details.');
       },
     });
   }
 
+  fullName(): string {
+    const u = this.user();
+    return u ? `${u.first_name} ${u.last_name}`.trim() : '';
+  }
+
+  createInitials(): string {
+    const u = this.user();
+    if (!u) return '';
+    return `${u.first_name?.charAt(0) ?? ''}${u.last_name?.charAt(0) ?? ''}`.toUpperCase();
+  }
+
+  openEditProfile(): void {
+    const currentUser = this.user();
+    if (!currentUser) return;
+
+    this.dialog
+      .open(ProfileModal, {
+        data: currentUser,
+        width: '480px',
+        maxWidth: '94vw',
+        autoFocus: 'dialog',
+      })
+      .afterClosed()
+      .subscribe((refresh) => {
+        if (refresh) this.userDetails(); // Refresh if saved
+      });
+  }
+
+  // =========================
+  // Bookings
+  // =========================
   loadBookings(): void {
     this.bookingsLoading.set(true);
     this.bookingsError.set('');
@@ -126,76 +158,63 @@ export class Profile implements OnInit {
     });
   }
 
+  setStatus(id: string): void {
+    this.statusFilter.set(id);
+  }
+
+  goToBooking(booking: UserBookedTicketResponse): void {
+    this.router.navigate(['/booking-details', booking.uuid]);
+  }
+
+  private toView(b: UserBookedTicketResponse): BookingView {
+    const date = b.event?.event_date ?? '';
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    return {
+      raw: b,
+      title: b.event?.title ?? 'Event',
+      location: b.event?.location ?? '',
+      date,
+      image: b.event?.images ?? null,
+      quantity: b.quantity,
+      total: b.total_amount,
+      isFree: b.is_free,
+      status: b.status ?? '',
+      isPast: !!date && new Date(date) < startOfToday,
+    };
+  }
+
   // =========================
-  // Row helpers
+  // Display helpers
   // =========================
-  formatAmount(item: CartItem): string {
-    const total = item.ticket_type.price * item.quantity;
+  formatAmount(total: number): string {
     return total === 0 ? 'Free' : `₦${total.toLocaleString('en-NG')}`;
   }
 
   month(iso: string): string {
-    return new Date(iso).toLocaleDateString('en-NG', { month: 'short' });
+    return iso
+      ? new Date(iso).toLocaleDateString('en-NG', { month: 'short' })
+      : '';
   }
 
   day(iso: string): string {
-    return String(new Date(iso).getDate());
+    return iso ? String(new Date(iso).getDate()) : '';
   }
 
-  // How many attendee forms are still empty on this cart item.
-  formsNeeded(item: CartItem): number {
-    return item.forms_needed;
+  statusLabel(status: string): string {
+    const s = status.replace(/_/g, ' ').toLowerCase();
+    return s.charAt(0).toUpperCase() + s.slice(1);
   }
 
-  // Scrolls into the queue page at this item, or navigates there.
-  goToQueueItem(item: CartItem): void {
-    this.router.navigate(['/queue'], {
-      fragment: `item-${item.uuid}`,
-    });
-  }
-
-  // =========================
-  // User
-  // =========================
-  userDetails(): void {
-    this.userService.getUser().subscribe({
-      next: (user) => {
-        this.user.set(user); // This was missing
-
-        this.firstName = user.first_name;
-        this.lastName = user.last_name;
-        this.email = user.email;
-        this.phone = user.phone;
-        this.createdAt = user.created_at;
-      },
-      error: (error) => console.error('Error fetching user details:', error),
-    });
-  }
-
-  createInitials(): string {
-    const first = this.firstName ? this.firstName.charAt(0).toUpperCase() : '';
-    const last = this.lastName ? this.lastName.charAt(0).toUpperCase() : '';
-    return first + last;
-  }
-
-  openEditProfile() {
-    const currentUser = this.user();
-    if (!currentUser) return;
-
-    this.dialog
-      .open(ProfileModal, {
-        data: currentUser,
-        width: '480px',
-        maxWidth: '94vw',
-        autoFocus: 'dialog',
-      })
-      .afterClosed()
-      .subscribe((refresh) => {
-        if (refresh) this.userDetails(); // Refresh if saved
-      });
-  }
-
-  goToBooking(booking: UserBookedTicketResponse) {
-    this.router.navigate(['/profile/bookings', booking.uuid]);
+  statusClasses(status: string): string {
+    const s = status.toLowerCase();
+    if (['paid', 'completed', 'confirmed', 'success', 'checked_in'].includes(s))
+      return 'bg-success/10 text-success-dark';
+    if (['pending', 'processing', 'reserved'].includes(s))
+      return 'bg-accent/30 text-accent-dark';
+    if (['cancelled', 'canceled', 'expired', 'failed', 'refunded'].includes(s))
+      return 'bg-danger/10 text-danger-dark';
+    return 'bg-ink/10 text-ink/70';
   }
 }

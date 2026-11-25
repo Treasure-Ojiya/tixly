@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { filter } from 'rxjs';
@@ -23,10 +23,9 @@ type StatusFilter = '' | 'draft' | 'published' | 'completed' | 'cancelled';
 
 // One ticket type inside the edit panel, with its own small form.
 
-
 @Component({
   selector: 'app-manage-events',
-  imports: [RouterLink, DatePipe, NgClass, ],
+  imports: [RouterLink, DatePipe, NgClass, NgTemplateOutlet],
   templateUrl: './manage-events.html',
   styleUrl: './manage-events.css',
 })
@@ -80,9 +79,6 @@ export class ManageEvents {
   // Edit panel state
   // =========================
 
-
-
-
   // =========================
   // Lifecycle
   // =========================
@@ -116,38 +112,36 @@ export class ManageEvents {
     this.query.set((event.target as HTMLInputElement).value);
   }
 
+  openView(event: EventListItem): void {
+    this.openManageModal(event, 'details');
+  }
 
+  openEdit(event: EventListItem): void {
+    this.openManageModal(event, 'edit');
+  }
 
-openView(event: EventListItem): void {
-  this.openManageModal(event, 'details');
-}
-
-openEdit(event: EventListItem): void {
-  this.openManageModal(event, 'edit');
-}
-
-private openManageModal(
-  event: EventListItem,
-  initialView: ManageModalData['initialView'],
-): void {
-  this.dialog
-    .open<ManageModal, ManageModalData, ManageModalResult>(ManageModal, {
-      data: {
-        eventId: event.uuid,
-        initialView,
-      },
-      width: '900px',
-      maxWidth: '95vw',
-      maxHeight: '90vh',
-      autoFocus: 'dialog',
-    })
-    .afterClosed()
-    .subscribe((result) => {
-      if (result === 'updated') {
-        this.load();
-      }
-    });
-}
+  private openManageModal(
+    event: EventListItem,
+    initialView: ManageModalData['initialView'],
+  ): void {
+    this.dialog
+      .open<ManageModal, ManageModalData, ManageModalResult>(ManageModal, {
+        data: {
+          eventId: event.uuid,
+          initialView,
+        },
+        width: '900px',
+        maxWidth: '95vw',
+        maxHeight: '90vh',
+        autoFocus: 'dialog',
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result === 'updated') {
+          this.load();
+        }
+      });
+  }
 
   askPublish(event: EventListItem): void {
     this.confirm({
@@ -217,18 +211,6 @@ private openManageModal(
     });
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
   statusLabel(status: string): string {
     return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
   }
@@ -258,8 +240,6 @@ private openManageModal(
       .pipe(filter((confirmed) => confirmed === true));
   }
 
-
-
   private errorText(error: unknown, fallback: string): string {
     const e = error as { error?: { detail?: unknown; message?: string } };
 
@@ -269,6 +249,4 @@ private openManageModal(
 
     return e?.error?.message ?? fallback;
   }
-
-
 }

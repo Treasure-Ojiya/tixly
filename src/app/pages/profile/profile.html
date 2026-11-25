@@ -1,250 +1,328 @@
 <div class="min-h-screen bg-surface">
-  <!-- Profile Header -->
-  <section class="bg-white border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-      <div class="flex flex-col sm:flex-row sm:items-end gap-5">
+  <!-- ═════════ Header ═════════ -->
+  <header>
+    <!-- Banner -->
+    <div
+      class="h-32 bg-linear-to-br from-nav to-footer sm:h-44"
+      aria-hidden="true"
+    ></div>
+
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div class="-mt-12 flex items-end justify-between gap-4 sm:-mt-14">
         <!-- Avatar -->
         <div
-          class="w-24 h-24 sm:w-28 sm:h-28 shrink-0 rounded-full bg-brand-soft text-brand ring-4 ring-white flex items-center justify-center text-3xl font-bold"
+          class="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-brand-soft text-3xl font-bold text-brand ring-4 ring-surface sm:h-28 sm:w-28"
           aria-hidden="true"
         >
           {{ createInitials() }}
         </div>
 
-        <!-- Name + actions -->
-        <div
-          class="flex-1 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 min-w-0"
+        <!-- Edit: text on desktop, pen icon on mobile -->
+        <button
+          type="button"
+          (click)="openEditProfile()"
+          aria-label="Edit profile"
+          class="mb-1 inline-flex h-10 w-10 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-semibold text-ink transition-colors cursor-pointer hover:border-brand hover:text-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:w-auto sm:px-5"
         >
-          <div class="min-w-0">
-            <h1 class="text-2xl sm:text-3xl font-bold text-ink truncate">
-              {{ firstName }} {{ lastName }}
-            </h1>
-
-            <p class="text-sm text-gray-500 mt-1 truncate">{{ email }}</p>
-
-            <p class="text-sm text-gray-500 mt-0.5">
-              {{ location }}
-              @if (createdAt) {
-                <span class="mx-1.5 text-gray-300" aria-hidden="true">|</span>
-                Joined {{ createdAt | dateFormat: "short" }}
-              }
-            </p>
-          </div>
-
-          <button
-            (click)="openEditProfile()"
-            type="button"
-            class="mt-4 inline-flex items-center gap-2 rounded-full border border-dashed border-gray-300 px-4 py-2 text-sm font-semibold text-ink transition-colors cursor-pointer hover:border-brand hover:text-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-          >
-            Edit profile
-          </button>
-        </div>
+          <i class="fas fa-pen text-xs" aria-hidden="true"></i>
+          <span class="hidden sm:inline">Edit profile</span>
+        </button>
       </div>
 
-      <!-- Stats -->
-      <!-- <dl class="flex flex-wrap items-center gap-x-8 gap-y-3 mt-6 text-sm">
-        @for (stat of stats; track stat.label) {
-          <div class="flex items-baseline gap-1.5">
-            <dt class="sr-only">{{ stat.label }}</dt>
-            <dd class="text-xl font-bold text-ink">{{ stat.value }}</dd>
-            <span class="text-gray-500" aria-hidden="true">{{
-              stat.label
-            }}</span>
-          </div>
-        }
-      </dl> -->
-    </div>
-  </section>
-
-  <!-- Profile Navigation -->
-  <section class="bg-white border-b border-gray-200 sticky top-0 z-10">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <nav class="flex gap-8" aria-label="Profile sections">
-        @for (tab of tabs; track tab.id) {
-          <button
-            type="button"
-            (click)="activeTab = tab.id"
-            [attr.aria-current]="activeTab === tab.id ? 'page' : null"
-            class="py-4 text-sm whitespace-nowrap border-b-2 -mb-px transition-colors cursor-pointer duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-            [ngClass]="
-              activeTab === tab.id
-                ? 'font-semibold text-brand border-brand'
-                : 'font-medium text-gray-500 border-transparent hover:text-ink'
-            "
-          >
-            {{ tab.label }}
-          </button>
-        }
-      </nav>
-    </div>
-  </section>
-
-  <!-- Content -->
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    @if (activeTab === "overview") {
-      <!-- Upcoming bookings -->
-      <section>
-        <div class="flex items-center justify-between mb-5">
-          <h2 class="text-xl font-bold text-ink">Upcoming</h2>
-          <a
-            routerLink="/queue"
-            class="text-sm font-semibold text-brand-dark hover:underline underline-offset-4 transition-colors cursor-pointer"
-          >
-            View all in queue
-          </a>
-        </div>
-
-        @if (queueLoading()) {
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4" aria-hidden="true">
-            @for (n of [1, 2]; track n) {
-              <div class="h-24 rounded-2xl bg-gray-200 animate-pulse"></div>
-            }
-          </div>
-        } @else if (queueError()) {
+      <!-- Name -->
+      <div class="mt-4 min-w-0 pb-8">
+        @if (user()) {
+          <h1 class="truncate text-2xl font-bold text-ink sm:text-3xl">
+            {{ fullName() }}
+          </h1>
+          <p class="mt-1 truncate text-sm text-gray-500">{{ user()!.email }}</p>
+        } @else if (userError()) {
           <p class="text-sm text-gray-500">
-            {{ queueError() }}
+            {{ userError() }}
             <button
               type="button"
-              (click)="loadQueue()"
-              class="font-semibold text-brand-dark hover:underline underline-offset-4 transition-colors cursor-pointer"
+              (click)="userDetails()"
+              class="font-semibold text-brand-dark underline-offset-4 hover:underline cursor-pointer"
             >
               Try again
             </button>
           </p>
-        } @else if (upcomingQueue().length === 0) {
-          <section
-            class="bg-white rounded-2xl border border-dashed border-gray-300 px-6 py-10 text-center"
+        } @else {
+          <div class="space-y-2" aria-hidden="true">
+            <div class="h-8 w-56 animate-pulse rounded bg-gray-200"></div>
+            <div class="h-4 w-40 animate-pulse rounded bg-gray-200"></div>
+          </div>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- ═════════ Content ═════════ -->
+  <main class="mx-auto max-w-6xl px-4 pb-16 sm:px-6 lg:px-8">
+    <div class="grid items-start gap-6 lg:grid-cols-3">
+      <!-- Account details -->
+      <aside
+        class="rounded-2xl border border-gray-200 bg-white p-6 lg:sticky lg:top-6"
+      >
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500">
+          Account
+        </h2>
+
+        @if (user(); as u) {
+          <dl class="mt-4 space-y-4">
+            <div class="flex items-start gap-3">
+              <span
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand"
+                aria-hidden="true"
+              >
+                <i class="fas fa-envelope text-sm"></i>
+              </span>
+              <div class="min-w-0">
+                <dt class="text-xs text-gray-500">Email</dt>
+                <dd class="truncate text-sm font-medium text-ink">
+                  {{ u.email }}
+                </dd>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <span
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand"
+                aria-hidden="true"
+              >
+                <i class="fas fa-phone text-sm"></i>
+              </span>
+              <div class="min-w-0">
+                <dt class="text-xs text-gray-500">Phone</dt>
+                <dd class="truncate text-sm font-medium text-ink">
+                  {{ u.phone || "Not added" }}
+                </dd>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <span
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand"
+                aria-hidden="true"
+              >
+                <i class="fas fa-map-marker-alt text-sm"></i>
+              </span>
+              <div class="min-w-0">
+                <dt class="text-xs text-gray-500">Location</dt>
+                <dd class="truncate text-sm font-medium text-ink">
+                  {{ location }}
+                </dd>
+              </div>
+            </div>
+
+            @if (u.created_at) {
+              <div class="flex items-start gap-3">
+                <span
+                  class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand"
+                  aria-hidden="true"
+                >
+                  <i class="fas fa-calendar-alt text-sm"></i>
+                </span>
+                <div class="min-w-0">
+                  <dt class="text-xs text-gray-500">Account Opened</dt>
+                  <dd class="text-sm font-medium text-ink">
+                    {{ u.created_at | dateFormat: "short" }}
+                  </dd>
+                </div>
+              </div>
+            }
+          </dl>
+        } @else {
+          <div class="mt-4 space-y-4" aria-hidden="true">
+            @for (n of [1, 2, 3]; track n) {
+              <div class="h-9 animate-pulse rounded-lg bg-gray-200"></div>
+            }
+          </div>
+        }
+      </aside>
+
+      <!-- Bookings -->
+      <section class="lg:col-span-2" aria-labelledby="bookings-title">
+        <div class="mb-4 flex items-baseline justify-between gap-4">
+          <h2 id="bookings-title" class="text-xl font-bold text-ink">
+            My bookings
+          </h2>
+
+          @if (
+            !bookingsLoading() && !bookingsError() && bookingList().length > 0
+          ) {
+            <p class="text-sm text-gray-500">
+              {{ bookingList().length }}
+              {{ bookingList().length === 1 ? "booking" : "bookings" }}
+            </p>
+          }
+        </div>
+
+        @if (
+          !bookingsLoading() && !bookingsError() && statusOptions().length > 2
+        ) {
+          <div
+            class="mb-4 flex flex-wrap gap-2"
+            role="group"
+            aria-label="Filter bookings by status"
           >
-            <p class="font-semibold text-ink">Your queue is empty</p>
-            <p class="text-sm text-gray-500 mt-1">
-              Save tickets from any event and pay when you're ready.
+            @for (option of statusOptions(); track option.id) {
+              <button
+                type="button"
+                (click)="setStatus(option.id)"
+                [attr.aria-pressed]="statusFilter() === option.id"
+                class="inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm transition-colors cursor-pointer"
+                [class]="
+                  statusFilter() === option.id
+                    ? 'border-brand-dark bg-brand-dark font-medium text-white'
+                    : 'border-gray-300 bg-white text-ink hover:border-brand-dark'
+                "
+              >
+                {{ option.label }}
+                <span
+                  class="rounded-full px-1.5 text-xs font-semibold tabular-nums"
+                  [class]="
+                    statusFilter() === option.id
+                      ? 'bg-white/20 text-white'
+                      : 'bg-gray-100 text-gray-600'
+                  "
+                  >{{ option.count }}</span
+                >
+              </button>
+            }
+          </div>
+        }
+
+        @if (bookingsLoading()) {
+          <div class="space-y-3" aria-hidden="true">
+            @for (n of [1, 2, 3]; track n) {
+              <div class="h-28 animate-pulse rounded-2xl bg-gray-200"></div>
+            }
+          </div>
+        } @else if (bookingsError()) {
+          <div
+            class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center"
+            role="alert"
+          >
+            <p class="font-semibold text-ink">{{ bookingsError() }}</p>
+            <button
+              type="button"
+              (click)="loadBookings()"
+              class="mt-4 rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-dark cursor-pointer"
+            >
+              Try again
+            </button>
+          </div>
+        } @else if (bookings().length > 0 && bookingList().length === 0) {
+          <div
+            class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center"
+          >
+            <p class="font-semibold text-ink">No bookings with this status</p>
+            <button
+              type="button"
+              (click)="setStatus('all')"
+              class="mt-4 rounded-full border border-gray-300 px-5 py-2 text-sm font-semibold text-ink transition-colors hover:border-brand-dark cursor-pointer"
+            >
+              Show all bookings
+            </button>
+          </div>
+        } @else if (bookingList().length === 0) {
+          <div
+            class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-14 text-center"
+          >
+            <div
+              class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-soft text-brand-dark"
+              aria-hidden="true"
+            >
+              <i class="fas fa-ticket-alt"></i>
+            </div>
+            <p class="mt-4 font-semibold text-ink">No bookings yet</p>
+            <p class="mt-1 text-sm text-gray-500">
+              When you book an event, it will show up here.
             </p>
             <a
               routerLink="/explore"
-              class="inline-flex mt-4 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors cursor-pointer"
+              class="mt-5 inline-flex rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-dark cursor-pointer"
             >
               Explore events
             </a>
-          </section>
+          </div>
         } @else {
-          <ul class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            @for (item of upcomingQueue(); track item.uuid) {
-              <ng-container
-                [ngTemplateOutlet]="queueRow"
-                [ngTemplateOutletContext]="{ $implicit: item }"
-              />
-            }
-          </ul>
-        }
-      </section>
-    } @else if (activeTab === "queue") {
-      <section>
-        <div class="flex items-center justify-between mb-5">
-          <h2 class="text-xl font-bold text-ink">Your queue</h2>
-          <a
-            routerLink="/queue"
-            class="text-sm font-semibold text-brand-dark hover:underline underline-offset-4"
-          >
-            Manage queue
-          </a>
-        </div>
+          <ul class="space-y-3">
+            @for (b of bookingList(); track b.raw.uuid) {
+              <li>
+                <button
+                  type="button"
+                  (click)="goToBooking(b.raw)"
+                  class="flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-4 text-left transition-colors cursor-pointer hover:border-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                  [class.opacity-70]="b.isPast"
+                >
+                  <!-- Date tile -->
+                  <div
+                    class="w-16 shrink-0 rounded-xl bg-ink py-2.5 text-center text-white"
+                  >
+                    <p class="text-xs font-medium text-white/70">
+                      {{ month(b.date) }}
+                    </p>
+                    <p class="mt-0.5 text-2xl font-bold leading-none">
+                      {{ day(b.date) }}
+                    </p>
+                  </div>
 
-        @if (queueLoading()) {
-          <div
-            class="h-24 rounded-2xl bg-gray-200 animate-pulse"
-            aria-hidden="true"
-          ></div>
-        } @else if (allQueue().length === 0) {
-          <section
-            class="bg-white rounded-2xl border border-dashed border-gray-300 px-6 py-10 text-center"
-          >
-            <p class="font-semibold text-ink">Nothing in your queue</p>
-            <a
-              routerLink="/explore"
-              class="inline-flex mt-4 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors cursor-pointer"
-            >
-              Explore events
-            </a>
-          </section>
-        } @else {
-          <ul class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            @for (item of allQueue(); track item.uuid) {
-              <ng-container
-                [ngTemplateOutlet]="queueRow"
-                [ngTemplateOutletContext]="{ $implicit: item }"
-              />
+                  <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <h3 class="truncate font-bold text-ink">{{ b.title }}</h3>
+                      @if (b.status) {
+                        <span
+                          class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                          [class]="statusClasses(b.status)"
+                        >
+                          {{ statusLabel(b.status) }}
+                        </span>
+                      }
+                    </div>
+
+                    <p class="mt-0.5 truncate text-sm text-gray-500">
+                      {{ b.location }}
+                      @if (b.location) {
+                        <span class="mx-1.5 text-gray-300" aria-hidden="true"
+                          >|</span
+                        >
+                      }
+                      {{ b.quantity }}
+                      {{ b.quantity === 1 ? "ticket" : "tickets" }}
+                      <span class="mx-1.5 text-gray-300" aria-hidden="true"
+                        >|</span
+                      >
+                      {{ b.isFree ? "Free" : formatAmount(b.total) }}
+                    </p>
+
+                    @if (b.isPast) {
+                      <p class="mt-1 text-xs font-medium text-gray-500">
+                        Event has passed
+                      </p>
+                    }
+                  </div>
+
+                  @if (b.image) {
+                    <img
+                      [src]="b.image"
+                      alt=""
+                      loading="lazy"
+                      class="hidden h-20 w-24 shrink-0 rounded-xl bg-gray-100 object-cover sm:block"
+                    />
+                  }
+
+                  <i
+                    class="fas fa-chevron-right shrink-0 text-xs text-gray-400"
+                    aria-hidden="true"
+                  ></i>
+                </button>
+              </li>
             }
           </ul>
         }
       </section>
-    } @else {
-      <!-- Empty state for tabs without content yet -->
-      <section
-        class="bg-white rounded-2xl border border-dashed border-gray-300 px-6 py-16 text-center"
-      >
-        <h2 class="text-lg font-bold text-ink">Nothing here yet</h2>
-        <p class="text-sm text-gray-500 mt-1">
-          Your {{ activeTabLabel.toLowerCase() }} will show up here.
-        </p>
-        <a
-          routerLink="/explore"
-          class="inline-flex mt-5 px-5 py-2 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand-dark transition-colors duration-200 cursor-pointer"
-        >
-          Explore events
-        </a>
-      </section>
-    }
+    </div>
   </main>
 </div>
-
-<!-- One booking row, used by the Overview and Bookings tabs -->
-<ng-template #queueRow let-item>
-  <li
-    class="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-200 cursor-pointer hover:border-brand transition-colors"
-    (click)="goToQueueItem(item)"
-  >
-    <!-- Date tile -->
-    <div class="w-16 shrink-0 rounded-xl bg-ink text-white text-center py-2.5">
-      <p class="text-xs font-medium text-white/70">
-        {{ month(item.event.event_date) }}
-      </p>
-      <p class="text-2xl font-bold leading-none mt-0.5">
-        {{ day(item.event.event_date) }}
-      </p>
-    </div>
-
-    <div class="min-w-0 flex-1">
-      <h3 class="font-bold text-ink truncate">{{ item.event.title }}</h3>
-      <p class="text-sm text-gray-500 mt-0.5 truncate">
-        {{ item.event.location }}
-        <span class="mx-1.5 text-gray-300" aria-hidden="true">|</span>
-        {{ item.quantity }} {{ item.quantity === 1 ? "ticket" : "tickets" }}
-        <span class="mx-1.5 text-gray-300" aria-hidden="true">|</span>
-        {{ formatAmount(item) }}
-      </p>
-
-      @if (formsNeeded(item) > 0) {
-        <span
-          class="inline-flex items-center mt-2 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-accent/20 text-accent-dark"
-        >
-          {{ formsNeeded(item) }} attendee
-          {{ formsNeeded(item) === 1 ? "form" : "forms" }} needed
-        </span>
-      } @else {
-        <span
-          class="inline-flex items-center mt-2 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-success/10 text-success-dark"
-        >
-          Ready to check out
-        </span>
-      }
-    </div>
-
-    @if (item.event.image_url) {
-      <img
-        [src]="item.event.image_url"
-        [alt]="item.event.title"
-        class="hidden sm:block w-24 h-20 rounded-xl object-cover shrink-0 bg-gray-100"
-      />
-    }
-  </li>
-</ng-template>

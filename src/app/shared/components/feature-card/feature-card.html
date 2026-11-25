@@ -145,7 +145,15 @@
                 <span aria-hidden="true">·</span>
                 <span class="shrink-0">
                   {{ event.event_date | date: "MMM d, y" }}
-                </span>
+                </span>·<span class="text-sm font-semibold text-ink">
+                          @if (event.event_type === "free") {
+                            Free entry
+                          } @else if (priceFor(event) !== null) {
+                            From {{ formatPrice(priceFor(event)!) }}
+                          } @else {
+                            Paid event
+                          }
+                        </span>
               </div>
 
               <a

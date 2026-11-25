@@ -118,7 +118,15 @@
                 <span class="text-gray-300">●</span>
                 <span>{{ event.location }}</span>
                 <span>·</span>
-                <span>{{ event.event_date | date: "MMM d, y" }}</span>
+                <span>{{ event.event_date | date: "MMM d, y" }}</span>·<span class="text-sm font-semibold text-ink">
+                          @if (event.event_type === "free") {
+                            Free entry
+                          } @else if (priceFor(event) !== null) {
+                            From {{ formatPrice(priceFor(event)!) }}
+                          } @else {
+                            Paid event
+                          }
+                        </span>
               </div>
 
               <a
