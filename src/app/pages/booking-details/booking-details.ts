@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink, Router } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { filter } from 'rxjs';
 
@@ -27,7 +27,6 @@ const PAID = ['paid', 'completed', 'confirmed', 'success', 'checked_in'];
   styleUrl: './booking-details.css',
 })
 export class BookingDetails implements OnInit {
-  private router = inject(Router);
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   private bookingService = inject(BookingService); // pay and cancel
@@ -124,29 +123,17 @@ export class BookingDetails implements OnInit {
   }
 
   // ─── Pay for a pending booking ───
+  // The order and its ticket holders already exist, so there is no form to
+  // fill in again: start Paystack for this order and send the browser there.
   payNow(): void {
     if (this.isPaying()) return;
-
-    const b = this.booking();
-    if (!b) {
-      this.toastService.show(
-        'We could not start your payment. Please try again.',
-        'error',
-        5000,
-      );
-      return;
-    }
-
     this.isPaying.set(true);
 
-    this.router
-      .navigate(['/payment'], {
-        queryParams: { order: b.uuid },
-      })
-      .then((navigated) => {
-        if (navigated) {
-          // Navigation succeeded — leave isPaying() locked so the button
-          // stays in its loading state until the payment page takes over.
+    this.bookingService.initPaystack(this.orderId).subscribe({
+      next: (res) => {
+        if (res.authorization_url?.startsWith('https://')) {
+          // Leave isPaying() locked while the browser goes to Paystack.
+          window.location.href = res.authorization_url;
           return;
         }
         this.isPaying.set(false);
@@ -155,17 +142,21 @@ export class BookingDetails implements OnInit {
           'error',
           5000,
         );
-      })
-      .catch((error) => {
-        console.error('Payment navigation failed:', error);
+      },
+      error: (error) => {
+        console.error('Payment start failed:', error);
         this.isPaying.set(false);
         this.toastService.show(
-          'We could not start your payment. Please try again.',
+          typeof error?.error?.detail === 'string'
+            ? error.error.detail
+            : 'We could not start your payment. Please try again.',
           'error',
           5000,
         );
-      });
+      },
+    });
   }
+
   // ─── Cancel a pending booking ───
   askCancel(): void {
     this.confirm({
