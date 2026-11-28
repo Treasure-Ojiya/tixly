@@ -322,6 +322,13 @@ export const routes: Routes = [
           ),
       },
       {
+  path: 'manage-events/:id',
+  loadComponent: () =>
+    import('./pages/events/organizer/managing-event/managing-event').then(
+      (m) => m.ManagingEvent,
+    ),
+},
+      {
         path: 'orders/:id', // <-- Add :id here
         loadComponent: () =>
           import('./pages/events/organizer/orders/orders').then(

@@ -1,0 +1,888 @@
+<section class="px-3 py-6 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-7xl">
+    <!-- Back -->
+    <a
+      routerLink="/events/organizer/manage-events"
+      class="inline-flex items-center gap-2 text-sm font-semibold text-brand-dark underline-offset-4 hover:underline"
+    >
+      <i class="fas fa-arrow-left text-xs" aria-hidden="true"></i>
+      Manage events
+    </a>
+
+    <!-- ───────────── Loading ───────────── -->
+    @if (isLoading()) {
+      <div class="mt-5 space-y-6" aria-hidden="true">
+        <div class="h-64 animate-pulse rounded-2xl bg-gray-200"></div>
+        <div class="grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]">
+          <div class="h-64 animate-pulse rounded-2xl bg-gray-200"></div>
+          <div class="h-96 animate-pulse rounded-2xl bg-gray-200"></div>
+        </div>
+      </div>
+    }
+
+    <!-- ───────────── Load error ───────────── -->
+    @else if (loadError()) {
+      <div
+        class="mt-5 rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-14 text-center"
+        role="alert"
+      >
+        <div
+          class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-soft text-xl font-bold text-brand-dark"
+          aria-hidden="true"
+        >
+          !
+        </div>
+        <h1 class="mt-4 text-lg font-bold text-ink">Event did not load</h1>
+        <p class="mt-1 text-sm text-gray-500">{{ loadError() }}</p>
+        <div class="mt-6 flex justify-center gap-3">
+          <button
+            type="button"
+            (click)="goBack()"
+            class="rounded-full border border-gray-300 px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-gray-50 cursor-pointer"
+          >
+            Back to events
+          </button>
+          <button
+            type="button"
+            (click)="load()"
+            class="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark cursor-pointer"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- ───────────── Loaded ───────────── -->
+    @else if (event(); as e) {
+      <!-- ═════════ Hero ═════════ -->
+      <header class="mt-5 overflow-hidden rounded-2xl border border-gray-200 bg-white">
+        <div class="relative">
+          @if (cover()) {
+            <img
+              [src]="cover()"
+              alt=""
+              class="h-40 w-full bg-gray-100 object-cover sm:h-56"
+            />
+          } @else {
+            <div class="h-40 w-full bg-linear-to-br from-nav to-footer sm:h-56" aria-hidden="true"></div>
+          }
+
+          <div
+            class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-black/50 to-transparent"
+            aria-hidden="true"
+          ></div>
+
+          <div class="absolute bottom-4 left-4 flex flex-wrap items-center gap-2 sm:left-6">
+            <span
+              class="rounded-full px-3 py-1 text-xs font-semibold shadow-sm"
+              [ngClass]="statusClasses(e.status)"
+            >
+              {{ statusLabel(e.status) }}
+            </span>
+
+            @if (e.featured) {
+              <span class="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-ink shadow-sm">
+                <i class="fas fa-star mr-1 text-[10px]" aria-hidden="true"></i>Featured
+              </span>
+            }
+          </div>
+        </div>
+
+        <div class="p-5 sm:p-6">
+          <h1 class="text-2xl font-bold leading-tight text-ink sm:text-3xl">{{ e.title }}</h1>
+
+          <p class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
+            <span>
+              <i class="fas fa-calendar-alt mr-1.5 text-brand" aria-hidden="true"></i>
+              {{ e.event_date | date: "EEE, MMM d, y" }} · {{ e.event_date | date: "shortTime" }}
+            </span>
+            <span class="min-w-0 truncate">
+              <i class="fas fa-map-marker-alt mr-1.5 text-brand" aria-hidden="true"></i>
+              {{ e.location }}
+            </span>
+          </p>
+        </div>
+      </header>
+
+      <!-- ═════════ Tabs (left) + content ═════════ -->
+      <div class="mt-6 grid items-start gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]">
+        <!-- Tab list -->
+        <nav
+          role="tablist"
+          aria-label="Event sections"
+          class="grid grid-cols-5 gap-1 rounded-2xl border border-gray-200 bg-white p-1.5 lg:sticky lg:top-6 lg:flex lg:flex-col lg:gap-1 lg:p-2"
+        >
+          @for (tab of tabs; track tab.id) {
+            <button
+              type="button"
+              role="tab"
+              [attr.aria-selected]="view() === tab.id"
+              (click)="showView(tab.id)"
+              class="flex min-w-0 flex-col items-center gap-1 rounded-xl px-1 py-2 text-center text-[10px] font-semibold leading-tight transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-brand lg:w-full lg:flex-row lg:gap-3 lg:px-3.5 lg:py-2.5 lg:text-left lg:text-sm"
+              [ngClass]="
+                view() === tab.id
+                  ? 'bg-brand-soft text-brand-dark'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-ink'
+              "
+            >
+              <i class="fas {{ tab.icon }} text-base lg:w-4 lg:text-center lg:text-sm" aria-hidden="true"></i>
+
+              <span class="max-w-full truncate lg:hidden">{{ tab.short }}</span>
+              <span class="hidden whitespace-nowrap lg:inline">{{ tab.label }}</span>
+
+              @if (tab.id === "orders" && ordersLoaded()) {
+                <span class="ml-auto hidden rounded-full bg-white px-2 py-0.5 text-xs font-semibold tabular-nums text-gray-600 ring-1 ring-gray-200 lg:inline">
+                  {{ orders().length }}
+                </span>
+              }
+            </button>
+          }
+        </nav>
+
+        <!-- Panel -->
+        <div class="min-w-0">
+          @switch (view()) {
+            <!-- ═════════ OVERVIEW ═════════ -->
+            @case ("details") {
+              <div class="space-y-6">
+                <!-- Key stats -->
+                <dl class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                  <div class="rounded-2xl border border-gray-200 border-t-4 border-t-brand bg-white p-5">
+                    <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Tickets sold</dt>
+                    <dd class="mt-2 text-2xl font-bold tabular-nums text-ink">{{ totalSold() }}</dd>
+                    <p class="mt-1 text-xs text-gray-500">of {{ totalCapacity() }} available</p>
+                  </div>
+
+                  <div class="rounded-2xl border border-gray-200 border-t-4 border-t-success bg-white p-5">
+                    <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Admission</dt>
+                    <dd class="mt-2 text-2xl font-bold text-ink">{{ e.event_type === "free" ? "Free" : "Paid" }}</dd>
+                    <p class="mt-1 text-xs text-gray-500">{{ e.ticket_types.length }} ticket {{ e.ticket_types.length === 1 ? "type" : "types" }}</p>
+                  </div>
+
+                  <div class="rounded-2xl border border-gray-200 border-t-4 border-t-accent bg-white p-5">
+                    <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Duration</dt>
+                    <dd class="mt-2 truncate text-2xl font-bold text-ink">{{ e.duration }}</dd>
+                    <p class="mt-1 text-xs text-gray-500">Per session</p>
+                  </div>
+
+                  <div class="rounded-2xl border border-gray-200 border-t-4 border-t-gray-300 bg-white p-5">
+                    <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Status</dt>
+                    <dd class="mt-2 text-2xl font-bold text-ink">{{ statusLabel(e.status) }}</dd>
+                    <p class="mt-1 text-xs text-gray-500">{{ e.featured ? "Featured event" : "Not featured" }}</p>
+                  </div>
+                </dl>
+
+                <!-- Details -->
+                <div class="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6">
+                  <h2 class="text-lg font-semibold text-ink">Event details</h2>
+
+                  <dl class="mt-4 grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                    <div>
+                      <dt class="text-xs font-semibold text-gray-500">Hosted by</dt>
+                      <dd class="mt-0.5 text-sm text-ink">{{ e.host_name }}</dd>
+                    </div>
+
+                    <div>
+                      <dt class="text-xs font-semibold text-gray-500">Host phone</dt>
+                      <dd class="mt-0.5 text-sm text-ink">{{ e.host_phone || "Not added" }}</dd>
+                    </div>
+
+                    <div>
+                      <dt class="text-xs font-semibold text-gray-500">Date and time</dt>
+                      <dd class="mt-0.5 text-sm text-ink">
+                        {{ e.event_date | date: "EEEE, MMM d, y" }}, {{ e.event_date | date: "shortTime" }}
+                      </dd>
+                    </div>
+
+                    <div>
+                      <dt class="text-xs font-semibold text-gray-500">Location</dt>
+                      <dd class="mt-0.5 text-sm text-ink">{{ e.location }}</dd>
+                    </div>
+
+                    @if (e.organizer) {
+                      <div class="sm:col-span-2">
+                        <dt class="text-xs font-semibold text-gray-500">Organizer</dt>
+                        <dd class="mt-0.5 text-sm text-ink">
+                          {{ e.organizer.first_name }} {{ e.organizer.last_name }}
+                          @if (e.organizer.organization) {
+                            <span class="text-gray-500">, {{ e.organizer.organization }}</span>
+                          }
+                        </dd>
+                      </div>
+                    }
+                  </dl>
+
+                  @if (e.categories.length > 0) {
+                    <div class="mt-5 flex flex-wrap gap-2">
+                      @for (category of e.categories; track category.uuid) {
+                        <span class="rounded-full bg-brand-soft px-3 py-1 text-xs font-medium text-brand-dark">
+                          {{ category.name }}
+                        </span>
+                      }
+                    </div>
+                  }
+
+                  <h3 class="mt-6 text-sm font-semibold text-ink">About this event</h3>
+                  <p class="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-gray-600">{{ e.description }}</p>
+                </div>
+
+                <!-- Tickets -->
+                @if (e.ticket_types.length > 0) {
+                  <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+                    <div class="border-b border-gray-100 px-5 py-4 sm:px-6">
+                      <h2 class="text-lg font-semibold text-ink">Tickets</h2>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                      <table class="min-w-full text-sm text-gray-700">
+                        <thead>
+                          <tr class="bg-gray-50 text-left text-xs uppercase tracking-wide text-gray-500">
+                            <th scope="col" class="px-5 py-3 font-semibold sm:px-6">Type</th>
+                            <th scope="col" class="px-5 py-3 font-semibold">Price</th>
+                            <th scope="col" class="px-5 py-3 font-semibold">Sold</th>
+                            <th scope="col" class="px-5 py-3 text-right font-semibold sm:px-6">Left</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (ticket of e.ticket_types; track ticket.uuid) {
+                            <tr class="border-t border-gray-100">
+                              <td class="px-5 py-3.5 font-medium text-ink sm:px-6">{{ ticket.name }}</td>
+                              <td class="whitespace-nowrap px-5 py-3.5">{{ formatPrice(ticket.price) }}</td>
+                              <td class="px-5 py-3.5">
+                                <div class="flex items-center gap-3">
+                                  <div class="h-1.5 w-20 overflow-hidden rounded-full bg-gray-100" aria-hidden="true">
+                                    <div class="h-full rounded-full bg-brand" [style.width.%]="ticketFill(ticket)"></div>
+                                  </div>
+                                  <span class="whitespace-nowrap text-xs tabular-nums text-gray-500">
+                                    {{ ticket.sold_quantity }} / {{ ticket.total_quantity }}
+                                  </span>
+                                </div>
+                              </td>
+                              <td class="px-5 py-3.5 text-right font-semibold tabular-nums text-ink sm:px-6">
+                                {{ ticket.available_quantity }}
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                }
+
+                <p class="text-xs text-gray-500">
+                  Created {{ e.created_at | date: "MMM d, y" }} · Last updated
+                  {{ e.updated_at | date: "MMM d, y, shortTime" }}
+                </p>
+              </div>
+            }
+
+            <!-- ═════════ ORDERS ═════════ -->
+            @case ("orders") {
+              <div class="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6">
+                <div class="mb-5">
+                  <h2 class="text-lg font-semibold text-ink">Event orders</h2>
+                  <p class="mt-1 text-sm text-gray-500">Bookings made for this event.</p>
+                </div>
+
+                <input
+                  type="search"
+                  placeholder="Search by order ID, buyer or type..."
+                  aria-label="Search event orders"
+                  [value]="orderSearch()"
+                  (input)="onOrderSearch($any($event.target).value)"
+                  class="mb-5 w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-2 focus:outline-brand"
+                />
+
+                @if (ordersLoading()) {
+                  <div class="space-y-3" aria-hidden="true">
+                    @for (n of [1, 2, 3]; track n) {
+                      <div class="h-14 animate-pulse rounded-xl bg-gray-100"></div>
+                    }
+                  </div>
+                } @else if (ordersError()) {
+                  <div class="py-10 text-center" role="alert">
+                    <p class="text-sm text-danger-dark">{{ ordersError() }}</p>
+                    <button
+                      type="button"
+                      (click)="loadOrders()"
+                      class="mt-3 text-sm font-semibold text-brand-dark hover:underline cursor-pointer"
+                    >
+                      Try again
+                    </button>
+                  </div>
+                } @else if (orders().length === 0) {
+                  <div class="py-12 text-center">
+                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-soft text-brand-dark" aria-hidden="true">
+                      <i class="fas fa-receipt"></i>
+                    </div>
+                    <h3 class="mt-4 font-semibold text-ink">No orders yet</h3>
+                    <p class="mt-1 text-sm text-gray-500">Bookings for this event will appear here.</p>
+                  </div>
+                } @else if (visibleOrders().length === 0) {
+                  <p class="py-8 text-center text-sm text-gray-500">No orders match your search.</p>
+                } @else {
+                  <div class="overflow-x-auto rounded-xl border border-gray-200">
+                    <table class="min-w-full text-left text-sm">
+                      <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+                        <tr>
+                          <th scope="col" class="px-4 py-3 font-semibold">Order</th>
+                          <th scope="col" class="px-4 py-3 font-semibold">Buyer</th>
+                          <th scope="col" class="px-4 py-3 text-right font-semibold">Tickets</th>
+                          <th scope="col" class="px-4 py-3 text-right font-semibold">Total</th>
+                          <th scope="col" class="px-4 py-3 font-semibold">Status</th>
+                          <!-- <th scope="col" class="px-4 py-3"><span class="sr-only">Actions</span></th> -->
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (order of visibleOrders(); track order.order_id) {
+                          <tr class="border-t border-gray-100 transition-colors hover:bg-gray-50">
+                            <td class="whitespace-nowrap px-4 py-3 font-mono text-xs font-semibold text-ink">
+                              {{ order.order_id.slice(0, 8) }}…
+                            </td>
+                            <td class="px-4 py-3 font-medium text-ink">{{ order.buyer }}</td>
+                            <td class="px-4 py-3 text-right tabular-nums">{{ order.tickets }}</td>
+                            <td class="whitespace-nowrap px-4 py-3 text-right font-semibold tabular-nums text-ink">
+                              {{ formatPrice(order.total) }}
+                            </td>
+                            <td class="px-4 py-3">
+                              <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
+                                {{ statusLabel(order.status) }}
+                              </span>
+                            </td>
+                            <!-- <td class="px-4 py-3 text-right">
+                              <button
+                                type="button"
+                                (click)="viewBooking(order.order_id)"
+                                class="rounded-full border border-gray-300 px-3.5 py-1.5 text-xs font-semibold text-ink transition-colors hover:border-brand-dark hover:text-brand-dark cursor-pointer"
+                              >
+                                View
+                              </button>
+                            </td> -->
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- ═════════ ATTENDEES ═════════ -->
+            @case ("attendees") {
+              <div class="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6">
+                @if (selectedOrder(); as orderId) {
+                  <!-- One booking -->
+                  <button
+                    type="button"
+                    (click)="backToList()"
+                    class="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-dark hover:underline cursor-pointer"
+                  >
+                    <i class="fas fa-arrow-left text-xs" aria-hidden="true"></i>
+                    Back to {{ returnView() }}
+                  </button>
+
+                  <div class="mb-5">
+                    <h2 class="text-lg font-semibold text-ink">Booking details</h2>
+                    <p class="mt-1 break-all font-mono text-xs text-gray-500">Order {{ orderId }}</p>
+                  </div>
+
+                  @if (attendeesLoading()) {
+                    <div class="h-32 animate-pulse rounded-xl bg-gray-100"></div>
+                  } @else if (selectedBooking(); as booking) {
+                    <dl class="grid gap-x-6 gap-y-4 rounded-xl bg-brand-soft p-5 sm:grid-cols-2">
+                      <div>
+                        <dt class="text-xs font-semibold text-gray-500">Buyer</dt>
+                        <dd class="mt-1 text-sm font-semibold text-ink">{{ booking.buyer_name }}</dd>
+                      </div>
+                      <div>
+                        <dt class="text-xs font-semibold text-gray-500">Email</dt>
+                        <dd class="mt-1 break-all text-sm text-ink">{{ booking.buyer_email }}</dd>
+                      </div>
+                      <div>
+                        <dt class="text-xs font-semibold text-gray-500">Ticket type</dt>
+                        <dd class="mt-1 text-sm text-ink">{{ booking.ticket_type }}</dd>
+                      </div>
+                      <div>
+                        <dt class="text-xs font-semibold text-gray-500">Quantity</dt>
+                        <dd class="mt-1 text-sm text-ink">{{ booking.quantity }}</dd>
+                      </div>
+                      <div>
+                        <dt class="text-xs font-semibold text-gray-500">Total amount</dt>
+                        <dd class="mt-1 text-sm font-semibold text-ink">{{ formatPrice(booking.total_amount) }}</dd>
+                      </div>
+                      <div>
+                        <dt class="text-xs font-semibold text-gray-500">Booked</dt>
+                        <dd class="mt-1 text-sm text-ink">{{ booking.booked_at | date: "MMM d, y, shortTime" }}</dd>
+                      </div>
+                      <div class="sm:col-span-2">
+                        <dt class="text-xs font-semibold text-gray-500">Check-in</dt>
+                        <dd class="mt-1 text-sm">
+                          @if (booking.checked_in) {
+                            <span class="rounded-full bg-success/10 px-2.5 py-1 text-xs font-semibold text-success-dark">
+                              Checked in {{ booking.checked_in_at | date: "MMM d, y, shortTime" }}
+                            </span>
+                          } @else {
+                            <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600">Not checked in</span>
+                          }
+                        </dd>
+                      </div>
+                    </dl>
+
+                    <h3 class="mb-3 mt-6 text-sm font-semibold text-ink">
+                      Attendees ({{ booking.attendees.length }})
+                    </h3>
+
+                    <ul class="space-y-3">
+                      @for (person of booking.attendees; track person.uuid) {
+                        <li class="flex items-center gap-4 rounded-xl border border-gray-200 p-4">
+                          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ink text-sm font-bold text-white" aria-hidden="true">
+                            {{ person.ticket_index }}
+                          </span>
+                          <div class="min-w-0 flex-1">
+                            <p class="truncate font-semibold text-ink">{{ person.full_name }}</p>
+                            <p class="truncate text-sm text-gray-500">{{ person.email }}</p>
+                            <p class="text-sm text-gray-500">{{ person.phone }}</p>
+                          </div>
+                          <span class="shrink-0 text-xs text-gray-400">Ticket {{ person.ticket_index }}</span>
+                        </li>
+                      } @empty {
+                        <li class="text-sm text-gray-500">No attendee details were supplied for this booking.</li>
+                      }
+                    </ul>
+                  } @else if (attendeesError()) {
+                    <p class="text-sm text-danger-dark" role="alert">{{ attendeesError() }}</p>
+                  } @else {
+                    <p class="text-sm text-gray-500">Booking details could not be found in the attendee response.</p>
+                  }
+                } @else {
+                  <!-- All bookings -->
+                  <div class="mb-5">
+                    <h2 class="text-lg font-semibold text-ink">Event attendees</h2>
+                    <p class="mt-1 text-sm text-gray-500">People registered for this event.</p>
+                  </div>
+
+                  @if (attendeesLoading()) {
+                    <div class="space-y-3" aria-hidden="true">
+                      @for (n of [1, 2, 3]; track n) {
+                        <div class="h-24 animate-pulse rounded-xl bg-gray-100"></div>
+                      }
+                    </div>
+                  } @else if (attendeesError()) {
+                    <div class="py-10 text-center" role="alert">
+                      <p class="text-sm text-danger-dark">{{ attendeesError() }}</p>
+                      <button
+                        type="button"
+                        (click)="loadAttendees()"
+                        class="mt-3 text-sm font-semibold text-brand-dark hover:underline cursor-pointer"
+                      >
+                        Try again
+                      </button>
+                    </div>
+                  } @else if (bookings().length === 0) {
+                    <div class="py-12 text-center">
+                      <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-soft text-brand-dark" aria-hidden="true">
+                        <i class="fas fa-users"></i>
+                      </div>
+                      <h3 class="mt-4 font-semibold text-ink">No attendees yet</h3>
+                      <p class="mt-1 text-sm text-gray-500">Attendees will appear here when bookings are made.</p>
+                    </div>
+                  } @else {
+                    <input
+                      type="search"
+                      placeholder="Search by buyer, attendee, email or reference..."
+                      aria-label="Search attendees"
+                      [value]="attendeeSearch()"
+                      (input)="onAttendeeSearch($any($event.target).value)"
+                      class="mb-3 w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-2 focus:outline-brand"
+                    />
+
+                    <p class="mb-4 text-xs text-gray-500" aria-live="polite">
+                      {{ totalAttendees() }} attendees across {{ bookings().length }} bookings
+                    </p>
+
+                    @if (visibleBookings().length === 0) {
+                      <p class="py-8 text-center text-sm text-gray-500">No attendees match your search.</p>
+                    } @else {
+                      <ul class="space-y-3">
+                        @for (booking of pagedBookings(); track booking.order_id) {
+                          <li class="min-w-0 overflow-hidden rounded-xl border border-gray-200">
+                            <!-- Buyer -->
+                            <div class="flex items-start gap-3 bg-gray-50 px-4 py-3">
+                              <div class="min-w-0 flex-1">
+                                <div class="flex flex-wrap items-center gap-2">
+                                  <p class="min-w-0 break-words font-semibold text-ink">{{ booking.buyer_name }}</p>
+                                  @if (booking.checked_in) {
+                                    <span class="rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success-dark">
+                                      Checked in
+                                    </span>
+                                  }
+                                </div>
+                                <p class="truncate text-sm text-gray-500">{{ booking.buyer_email }}</p>
+                                <p class="mt-1 truncate text-xs text-gray-400">
+                                  {{ booking.order_ref }} · {{ booking.quantity }}
+                                  {{ booking.quantity === 1 ? "ticket" : "tickets" }}
+                                </p>
+                              </div>
+
+                              <button
+                                type="button"
+                                (click)="viewBooking(booking.order_id, 'attendees')"
+                                class="shrink-0 rounded-full border border-gray-300 px-3.5 py-1.5 text-xs font-semibold text-ink transition-colors hover:border-brand-dark hover:text-brand-dark cursor-pointer"
+                              >
+                                View
+                              </button>
+                            </div>
+
+                            <!-- More than one ticket: reveal the other attendees -->
+                            @if (booking.attendees.length > 1) {
+                              <button
+                                type="button"
+                                (click)="toggleExpanded(booking.order_id)"
+                                [attr.aria-expanded]="isExpanded(booking.order_id)"
+                                [attr.aria-controls]="'attendees-' + booking.order_id"
+                                class="flex w-full items-center justify-between gap-3 border-t border-gray-200 px-4 py-2.5 text-left text-sm font-semibold text-brand-dark transition-colors hover:bg-brand-soft/50 cursor-pointer focus-visible:outline-2 focus-visible:outline-brand"
+                              >
+                                <span>
+                                  {{ isExpanded(booking.order_id) ? "Hide" : "Show" }}
+                                  {{ booking.attendees.length }} attendees
+                                </span>
+                                <i
+                                  class="fas fa-chevron-down text-xs transition-transform duration-200"
+                                  [class.rotate-180]="isExpanded(booking.order_id)"
+                                  aria-hidden="true"
+                                ></i>
+                              </button>
+
+                              @if (isExpanded(booking.order_id)) {
+                                <ul
+                                  [id]="'attendees-' + booking.order_id"
+                                  class="divide-y divide-gray-100 border-t border-gray-100 px-4"
+                                >
+                                  @for (person of booking.attendees; track person.uuid) {
+                                    <li class="flex items-center gap-3 py-2.5 text-sm">
+                                      <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-soft text-xs font-bold text-brand-dark" aria-hidden="true">
+                                        {{ person.ticket_index }}
+                                      </span>
+                                      <div class="min-w-0 flex-1">
+                                        <p class="truncate font-medium text-ink">{{ person.full_name }}</p>
+                                        <p class="truncate text-xs text-gray-500">{{ person.email }}</p>
+                                      </div>
+                                    </li>
+                                  }
+                                </ul>
+                              }
+                            } @else if (
+                              booking.attendees.length === 1 &&
+                              booking.attendees[0].full_name !== booking.buyer_name
+                            ) {
+                              <p class="truncate border-t border-gray-100 px-4 py-2.5 text-xs text-gray-500">
+                                Ticket for
+                                <span class="font-medium text-ink">{{ booking.attendees[0].full_name }}</span>
+                              </p>
+                            }
+                          </li>
+                        }
+                      </ul>
+
+                      @if (hasMoreBookings()) {
+                        <div class="mt-4 text-center">
+                          <button
+                            type="button"
+                            (click)="showMoreBookings()"
+                            class="rounded-full border border-gray-300 px-5 py-2 text-sm font-semibold text-ink transition-colors hover:border-brand-dark hover:text-brand-dark cursor-pointer"
+                          >
+                            Show more ({{ visibleBookings().length - pagedBookings().length }} left)
+                          </button>
+                        </div>
+                      }
+                    }
+                  }
+                }
+              </div>
+            }
+
+            <!-- ═════════ EDIT ═════════ -->
+            @case ("edit") {
+              <div class="space-y-6">
+                <div class="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6">
+                  <h2 class="text-lg font-semibold text-ink">Edit event</h2>
+                  <p class="mt-1 text-sm text-gray-500">Update the details attendees see.</p>
+
+                  <form
+                    id="edit-event-form"
+                    [formGroup]="editForm"
+                    (ngSubmit)="saveEdit()"
+                    class="mt-5 space-y-5"
+                  >
+                    <div>
+                      <label for="edit-event-title" class="mb-1.5 block text-sm font-semibold text-ink">Title</label>
+                      <input
+                        id="edit-event-title"
+                        type="text"
+                        formControlName="title"
+                        class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-2 focus:outline-brand"
+                        [ngClass]="{ 'border-danger': hasFieldError('title') }"
+                      />
+                    </div>
+
+                    <div>
+                      <label for="edit-event-host" class="mb-1.5 block text-sm font-semibold text-ink">Host name</label>
+                      <input
+                        id="edit-event-host"
+                        type="text"
+                        formControlName="host_name"
+                        class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-2 focus:outline-brand"
+                        [ngClass]="{ 'border-danger': hasFieldError('host_name') }"
+                      />
+                    </div>
+
+                    <div>
+                      <label for="edit-event-description" class="mb-1.5 block text-sm font-semibold text-ink">Description</label>
+                      <textarea
+                        id="edit-event-description"
+                        rows="5"
+                        formControlName="description"
+                        class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-2 focus:outline-brand"
+                        [ngClass]="{ 'border-danger': hasFieldError('description') }"
+                      ></textarea>
+                    </div>
+
+                    <div>
+                      <label for="edit-event-location" class="mb-1.5 block text-sm font-semibold text-ink">Location</label>
+                      <input
+                        id="edit-event-location"
+                        type="text"
+                        formControlName="location"
+                        class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-2 focus:outline-brand"
+                        [ngClass]="{ 'border-danger': hasFieldError('location') }"
+                      />
+                    </div>
+
+                    <div class="grid gap-5 sm:grid-cols-2">
+                      <div>
+                        <label for="edit-event-date" class="mb-1.5 block text-sm font-semibold text-ink">Date and time</label>
+                        <input
+                          id="edit-event-date"
+                          type="datetime-local"
+                          formControlName="event_date"
+                          class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-2 focus:outline-brand"
+                          [ngClass]="{ 'border-danger': hasFieldError('event_date') }"
+                        />
+                      </div>
+
+                      <div>
+                        <label for="edit-event-duration" class="mb-1.5 block text-sm font-semibold text-ink">Duration</label>
+                        <input
+                          id="edit-event-duration"
+                          type="text"
+                          formControlName="duration"
+                          class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-2 focus:outline-brand"
+                          [ngClass]="{ 'border-danger': hasFieldError('duration') }"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="flex flex-wrap justify-end gap-3 border-t border-gray-100 pt-5">
+                      <button
+                        type="button"
+                        (click)="showView('details')"
+                        class="rounded-full border border-gray-300 px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-gray-50 cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        [disabled]="isSaving()"
+                        class="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {{ isSaving() ? "Saving..." : "Save changes" }}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <!-- Cover image -->
+                <div class="flex items-center gap-4 rounded-2xl border border-gray-200 bg-white p-4 sm:p-5">
+                  @if (coverUrl()) {
+                    <img
+                      [src]="coverUrl()"
+                      alt="Current cover image"
+                      class="h-16 w-24 shrink-0 rounded-lg bg-gray-100 object-cover"
+                    />
+                  } @else {
+                    <div class="h-16 w-24 shrink-0 rounded-lg bg-brand-soft" aria-hidden="true"></div>
+                  }
+
+                  <div class="flex-1">
+                    <p class="text-sm font-semibold text-ink">Cover image</p>
+                    <p class="text-xs text-gray-500">Shown at the top of your event page.</p>
+                  </div>
+
+                  <label
+                    class="cursor-pointer rounded-full border border-brand px-4 py-1.5 text-sm font-semibold text-ink transition-colors hover:bg-brand-dark hover:text-white"
+                    [ngClass]="{ 'pointer-events-none opacity-50': isChangingCover() }"
+                  >
+                    {{ isChangingCover() ? "Uploading..." : "Change" }}
+
+                    <input
+                      #coverInput
+                      type="file"
+                      accept="image/*"
+                      class="hidden"
+                      (change)="changeCover(coverInput)"
+                    />
+                  </label>
+                </div>
+
+                <!-- Tickets -->
+                @if (tickets().length > 0) {
+                  <div class="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6">
+                    <h2 class="text-lg font-semibold text-ink">Tickets</h2>
+                    <p class="mt-1 text-sm text-gray-500">Each ticket type saves on its own.</p>
+
+                    <div class="mt-4 space-y-3">
+                      @for (ticket of tickets(); track ticket.uuid) {
+                        <div [formGroup]="ticket.form" class="rounded-xl border border-gray-200 p-4">
+                          <div class="grid gap-3 sm:grid-cols-3">
+                            <div>
+                              <label [attr.for]="'ticket-name-' + ticket.uuid" class="mb-1 block text-xs font-semibold text-gray-500">Name</label>
+                              <input
+                                [id]="'ticket-name-' + ticket.uuid"
+                                type="text"
+                                formControlName="name"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-2 focus:outline-brand"
+                                [ngClass]="{ 'border-danger': hasTicketError(ticket, 'name') }"
+                              />
+                            </div>
+
+                            <div>
+                              <label [attr.for]="'ticket-price-' + ticket.uuid" class="mb-1 block text-xs font-semibold text-gray-500">Price (₦)</label>
+                              <input
+                                [id]="'ticket-price-' + ticket.uuid"
+                                type="number"
+                                min="0"
+                                formControlName="price"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-2 focus:outline-brand"
+                                [ngClass]="{ 'border-danger': hasTicketError(ticket, 'price') }"
+                              />
+                            </div>
+
+                            <div>
+                              <label [attr.for]="'ticket-qty-' + ticket.uuid" class="mb-1 block text-xs font-semibold text-gray-500">Total quantity</label>
+                              <input
+                                [id]="'ticket-qty-' + ticket.uuid"
+                                type="number"
+                                [min]="ticket.sold || 1"
+                                formControlName="total_quantity"
+                                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-2 focus:outline-brand"
+                                [ngClass]="{ 'border-danger': hasTicketError(ticket, 'total_quantity') }"
+                              />
+                            </div>
+                          </div>
+
+                          <div class="mt-3 flex items-center justify-between gap-3 border-t border-gray-100 pt-3">
+                            <p class="text-xs text-gray-500">{{ ticket.sold }} sold</p>
+
+                            <button
+                              type="button"
+                              (click)="saveTicket(ticket)"
+                              [disabled]="savingTicketId() === ticket.uuid || !ticket.form.dirty"
+                              class="rounded-full border border-brand px-4 py-1.5 text-sm font-semibold text-ink transition-colors hover:bg-brand-dark hover:text-white cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-ink"
+                            >
+                              {{ savingTicketId() === ticket.uuid ? "Saving..." : "Save ticket" }}
+                            </button>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+
+                @if (editError()) {
+                  <p class="rounded-xl bg-brand-soft px-4 py-3 text-sm text-danger-dark" role="alert">
+                    {{ editError() }}
+                  </p>
+                }
+              </div>
+            }
+
+            <!-- ═════════ FEATURE ═════════ -->
+            @case ("feature") {
+              <div class="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6">
+                <div class="flex items-start gap-4">
+                  <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent/20 text-lg text-accent-dark" aria-hidden="true">
+                    <i class="fas fa-star"></i>
+                  </span>
+
+                  <div class="flex-1">
+                    <h2 class="text-lg font-semibold text-ink">Feature this event</h2>
+                    <p class="mt-1 text-sm leading-relaxed text-gray-500">
+                      Give your event additional visibility by featuring it on Tixly.
+                    </p>
+
+                    @if (e.featured) {
+                      <p class="mt-4 inline-flex items-center gap-2 rounded-full bg-success/10 px-3.5 py-1.5 text-sm font-semibold text-success-dark">
+                        <i class="fas fa-check-circle text-xs" aria-hidden="true"></i>
+                        This event is already featured.
+                      </p>
+                    } @else {
+                      <button
+                        type="button"
+                        (click)="openFeatureConfirmation()"
+                        class="mt-4 inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark cursor-pointer"
+                      >
+                        <i class="fas fa-star text-xs" aria-hidden="true"></i>
+                        Feature event
+                      </button>
+                    }
+                  </div>
+                </div>
+
+                @if (showFeatureConfirmation() && !e.featured) {
+                  <div class="mt-5 rounded-xl border border-brand/20 bg-brand-soft p-4">
+                    <h3 class="font-semibold text-ink">Continue to feature this event?</h3>
+
+                    <p class="mt-2 text-sm leading-relaxed text-gray-600">
+                      You'll be redirected to Paystack to complete payment. Your event will be
+                      published and marked as featured automatically once payment is confirmed.
+                    </p>
+
+                    @if (featureError()) {
+                      <p class="mt-3 text-sm text-danger-dark" role="alert">{{ featureError() }}</p>
+                    }
+
+                    <div class="mt-4 flex flex-wrap justify-end gap-3">
+                      <button
+                        type="button"
+                        (click)="cancelFeatureConfirmation()"
+                        [disabled]="isStartingFeaturePayment()"
+                        class="rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-gray-50 cursor-pointer disabled:opacity-50"
+                      >
+                        Cancel
+                      </button>
+
+                      <button
+                        type="button"
+                        (click)="confirmFeaturePayment()"
+                        [disabled]="isStartingFeaturePayment()"
+                        class="rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-dark cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        @if (isStartingFeaturePayment()) {
+                          Redirecting...
+                        } @else {
+                          Continue to payment
+                          <i class="fas fa-arrow-right ml-1 text-xs" aria-hidden="true"></i>
+                        }
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+  </div>
+</section>

@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-surface">
+<div class="min-h-screen overflow-x-clip bg-surface">
   <!-- ═════════ Header ═════════ -->
   <header>
     <!-- Banner -->
@@ -59,10 +59,10 @@
 
   <!-- ═════════ Content ═════════ -->
   <main class="mx-auto max-w-6xl px-4 pb-16 sm:px-6 lg:px-8">
-    <div class="grid items-start gap-6 lg:grid-cols-3">
+    <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
       <!-- Account details -->
       <aside
-        class="rounded-2xl border border-gray-200 bg-white p-6 lg:sticky lg:top-6"
+        class="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 lg:sticky lg:top-6"
       >
         <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500">
           Account
@@ -142,7 +142,7 @@
       </aside>
 
       <!-- Bookings -->
-      <section class="lg:col-span-2" aria-labelledby="bookings-title">
+      <section class="min-w-0 lg:col-span-2" aria-labelledby="bookings-title">
         <div class="mb-4 flex items-baseline justify-between gap-4">
           <h2 id="bookings-title" class="text-xl font-bold text-ink">
             My bookings
@@ -250,11 +250,11 @@
         } @else {
           <ul class="space-y-3">
             @for (b of bookingList(); track b.raw.uuid) {
-              <li>
+              <li class="min-w-0">
                 <button
                   type="button"
                   (click)="goToBooking(b.raw)"
-                  class="flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-4 text-left transition-colors cursor-pointer hover:border-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                  class="flex w-full min-w-0 items-center gap-3 rounded-2xl border border-gray-200 bg-white p-3 text-left sm:gap-4 sm:p-4 transition-colors cursor-pointer hover:border-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
                   [class.opacity-70]="b.isPast"
                 >
                   <!-- Date tile -->

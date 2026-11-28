@@ -23,6 +23,7 @@ import {
 import { BookingDetailsResponse, CartItem } from '../../app-model/model';
 import { ExploreService } from '../../core/services/explore-service/explore-service';
 import { CartService } from '../../core/services/cart-service/cart-service';
+import { UserService } from '../../core/services/user-service/user-service';
 import { BookingService } from '../../core/services/booking-service/booking-service';
 import { ToastService } from '../../core/services/toast-service/toast-service';
 
@@ -398,7 +399,7 @@ export class Payment {
     this.scrollToTop();
   }
   goBack(): void {
-        if (this.redirecting() || this.isPaying()) return; // <-- ADD THIS LINE
+    if (this.redirecting() || this.isPaying()) return; // <-- ADD THIS LINE
 
     this.location.back();
   }
@@ -530,5 +531,4 @@ export class Payment {
   formatPrice(amount: number): string {
     return amount === 0 ? 'Free' : `₦${amount.toLocaleString('en-NG')}`;
   }
-
 }

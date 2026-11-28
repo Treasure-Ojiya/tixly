@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { filter } from 'rxjs';
 
@@ -12,12 +12,6 @@ import {
   ConfirmModal,
   ConfirmModalData,
 } from '../../../../shared/modals/confirm-modal/confirm-modal';
-
-import {
-  ManageModal,
-  ManageModalData,
-  ManageModalResult,
-} from '../../../../shared/modals/manage-modal/manage-modal';
 
 type StatusFilter = '' | 'draft' | 'published' | 'completed' | 'cancelled';
 
@@ -31,7 +25,8 @@ type StatusFilter = '' | 'draft' | 'published' | 'completed' | 'cancelled';
 })
 export class ManageEvents {
   private organizerService = inject(OrganizerService);
-  private dialog = inject(MatDialog);
+  private dialog = inject(MatDialog); // still used for the confirm dialogs
+  private router = inject(Router);
   private toastService = inject(ToastService);
 
   // =========================
@@ -112,35 +107,15 @@ export class ManageEvents {
     this.query.set((event.target as HTMLInputElement).value);
   }
 
+  // View and Edit open the event's own page (the page reads ?tab= to pick a tab).
   openView(event: EventListItem): void {
-    this.openManageModal(event, 'details');
+    this.router.navigate(['/events/organizer/manage-events', event.uuid]);
   }
 
   openEdit(event: EventListItem): void {
-    this.openManageModal(event, 'edit');
-  }
-
-  private openManageModal(
-    event: EventListItem,
-    initialView: ManageModalData['initialView'],
-  ): void {
-    this.dialog
-      .open<ManageModal, ManageModalData, ManageModalResult>(ManageModal, {
-        data: {
-          eventId: event.uuid,
-          initialView,
-        },
-        width: '900px',
-        maxWidth: '95vw',
-        maxHeight: '90vh',
-        autoFocus: 'dialog',
-      })
-      .afterClosed()
-      .subscribe((result) => {
-        if (result === 'updated') {
-          this.load();
-        }
-      });
+    this.router.navigate(['/events/organizer/manage-events', event.uuid], {
+      queryParams: { tab: 'edit' },
+    });
   }
 
   askPublish(event: EventListItem): void {
