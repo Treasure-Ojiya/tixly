@@ -20,7 +20,7 @@
     </div>
   </section>
 } @else if (events().length > 0) {
-  <section class="max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-8 py-10">
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div class="flex items-start gap-3">
@@ -144,16 +144,16 @@
                 <span class="line-clamp-1">{{ event.location }}</span>
                 <span aria-hidden="true">·</span>
                 <span class="shrink-0">
-                  {{ event.event_date | date: "MMM d, y" }}
-                </span>·<span class="text-sm font-semibold text-ink">
-                          @if (event.event_type === "free") {
-                            Free entry
-                          } @else if (priceFor(event) !== null) {
-                            From {{ formatPrice(priceFor(event)!) }}
-                          } @else {
-                            Paid event
-                          }
-                        </span>
+                  {{ event.event_date | date: "MMM d, y" }} </span
+                >·<span class="text-sm font-semibold text-ink">
+                  @if (event.event_type === "free") {
+                    Free entry
+                  } @else if (priceFor(event) !== null) {
+                    From {{ formatPrice(priceFor(event)!) }}
+                  } @else {
+                    Paid event
+                  }
+                </span>
               </div>
 
               <a

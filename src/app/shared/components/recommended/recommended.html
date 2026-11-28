@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-8 py-10">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <div class="flex items-center justify-between">
     <div class="flex items-start gap-3">
       <div class="w-1.5 h-10 rounded-full bg-accent"></div>
@@ -80,7 +80,6 @@
         </div>
       }
     </div>
-
   } @else if (recommended().length > 0) {
     <swiper-container
       #swiper
@@ -118,15 +117,16 @@
                 <span class="text-gray-300">●</span>
                 <span>{{ event.location }}</span>
                 <span>·</span>
-                <span>{{ event.event_date | date: "MMM d, y" }}</span>·<span class="text-sm font-semibold text-ink">
-                          @if (event.event_type === "free") {
-                            Free entry
-                          } @else if (priceFor(event) !== null) {
-                            From {{ formatPrice(priceFor(event)!) }}
-                          } @else {
-                            Paid event
-                          }
-                        </span>
+                <span>{{ event.event_date | date: "MMM d, y" }}</span
+                >·<span class="text-sm font-semibold text-ink">
+                  @if (event.event_type === "free") {
+                    Free entry
+                  } @else if (priceFor(event) !== null) {
+                    From {{ formatPrice(priceFor(event)!) }}
+                  } @else {
+                    Paid event
+                  }
+                </span>
               </div>
 
               <a
